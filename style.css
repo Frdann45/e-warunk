@@ -3524,4 +3524,600 @@ button {
     }
 }
 
+/* ── Smooth Theme Transitions ────────────────────────────── */
+body, .navbar, .sidebar, .main-content, .info-card, .product-card, .cart-card, .summary-card, .contact-card {
+    transition: background-color var(--transition-med), border-color var(--transition-med), color var(--transition-med);
+}
+
+/* ── Dark Theme Overrides ─────────────────────────────────── */
+.dark-theme {
+    --color-bg:             #121212;
+    --color-bg-sidebar:     #1E1E1E;
+    --color-bg-card:        #1E1E1E;
+    --color-bg-footer:      #0A0A0A;
+    --color-text-primary:   #E5E0DA;
+    --color-text-secondary: #A8A095;
+    --color-text-light:     #7C756B;
+    --color-border:         #2D2924;
+    --color-border-light:   #25221E;
+    
+    /* Adjust specific elements for dark mode */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.5);
+    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dark-theme body {
+    background-color: var(--color-bg);
+    color: var(--color-text-primary);
+}
+
+/* ── Profile Dropdown Styles ──────────────────────────────── */
+.profile-dropdown {
+    position: absolute;
+    top: calc(var(--navbar-height) - 10px);
+    right: 28px;
+    width: 260px;
+    background: var(--color-bg-sidebar);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    z-index: 1100;
+    padding: 16px;
+    display: none;
+    flex-direction: column;
+    animation: dropdownFadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.profile-dropdown--show {
+    display: flex;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.profile-dropdown__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 4px;
+}
+
+.profile-dropdown__avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+    color: white;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(109, 58, 26, 0.2);
+}
+
+.profile-dropdown__user-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-dropdown__name {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+.profile-dropdown__status {
+    font-size: 0.72rem;
+    color: var(--color-text-secondary);
+    margin-top: 1px;
+}
+
+.profile-dropdown__divider {
+    height: 1px;
+    background: var(--color-border-light);
+    margin: 12px 0;
+}
+
+.profile-dropdown__menu {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.profile-dropdown__item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    background: transparent;
+    border: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    font-family: inherit;
+    text-align: left;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    position: relative;
+    cursor: pointer;
+}
+
+.profile-dropdown__item:hover {
+    background: rgba(109, 58, 26, 0.06);
+    color: var(--color-primary);
+}
+
+.profile-dropdown__icon {
+    width: 18px;
+    height: 18px;
+    color: var(--color-text-secondary);
+}
+
+.profile-dropdown__item:hover .profile-dropdown__icon {
+    color: var(--color-primary);
+}
+
+.profile-dropdown__badge {
+    margin-left: auto;
+    background: var(--color-accent-red);
+    color: white;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    line-height: 1.2;
+}
+
+/* ── Modals & Drawers Base ───────────────────────────────── */
+.custom-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.custom-modal--show {
+    display: flex;
+}
+
+.custom-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(4px);
+    transition: opacity var(--transition-fast);
+}
+
+.custom-modal__content {
+    position: relative;
+    background: var(--color-bg-sidebar);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    z-index: 2;
+    animation: modalScaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    max-width: 90%;
+}
+
+@keyframes modalScaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.custom-modal__content--login {
+    width: 400px;
+    padding: 32px;
+}
+
+.custom-modal__close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 1.5rem;
+    color: var(--color-text-light);
+    cursor: pointer;
+    line-height: 1;
+    z-index: 10;
+    border: none;
+    background: transparent;
+}
+
+.custom-modal__close:hover {
+    color: var(--color-text-primary);
+}
+
+/* ── Drawer specific ─────────────────────────────────────── */
+.custom-drawer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 380px;
+    max-width: 100%;
+    background: var(--color-bg-sidebar);
+    border-left: 1px solid var(--color-border);
+    box-shadow: var(--shadow-lg);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform var(--transition-med) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.custom-modal--show .custom-drawer {
+    transform: translateX(0);
+}
+
+.custom-drawer__header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--color-border-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.custom-drawer__title-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.custom-drawer__title-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--color-primary);
+}
+
+.custom-drawer__title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+.custom-drawer__close {
+    font-size: 1.5rem;
+    color: var(--color-text-light);
+    cursor: pointer;
+    line-height: 1;
+    border: none;
+    background: transparent;
+}
+
+.custom-drawer__close:hover {
+    color: var(--color-text-primary);
+}
+
+.custom-drawer__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+}
+
+.custom-drawer__footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--color-border-light);
+    background: var(--color-border-light);
+}
+
+/* ── Login Box ────────────────----------------───────────── */
+.login-box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.login-box__title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--color-primary-dark);
+}
+
+.login-box__subtitle {
+    font-size: 0.82rem;
+    color: var(--color-text-secondary);
+    line-height: 1.45;
+    margin-bottom: 12px;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.login-form__actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78rem;
+    color: var(--color-text-secondary);
+}
+
+.login-form__remember {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.login-form__forgot {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.login-form__forgot:hover {
+    text-decoration: underline;
+}
+
+.login-form__submit-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--color-primary);
+    color: white;
+    font-weight: 700;
+    font-size: 0.875rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(109, 58, 26, 0.2);
+    transition: all var(--transition-fast);
+    text-align: center;
+    margin-top: 4px;
+    border: none;
+}
+
+.login-form__submit-btn:hover {
+    background: var(--color-primary-hover);
+    box-shadow: 0 6px 16px rgba(109, 58, 26, 0.3);
+}
+
+.login-box__footer {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+    margin-top: 16px;
+}
+
+.login-box__register-link {
+    color: var(--color-primary);
+    font-weight: 700;
+}
+
+.login-box__register-link:hover {
+    text-decoration: underline;
+}
+
+/* ── Notifications List ──────────────────────────────────── */
+.notif-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.notif-item {
+    display: flex;
+    gap: 14px;
+    padding: 14px;
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    transition: all var(--transition-fast);
+}
+
+.notif-item:hover {
+    border-color: var(--color-primary-light);
+    background: rgba(109, 58, 26, 0.01);
+}
+
+.notif-item--unread {
+    background: rgba(109, 58, 26, 0.03);
+    border-color: rgba(109, 58, 26, 0.15);
+}
+
+.notif-item__icon-wrapper {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.notif-item__icon-wrapper--promo {
+    background: rgba(240, 165, 0, 0.08);
+    color: var(--color-badge-yellow);
+}
+
+.notif-item__icon-wrapper--order {
+    background: rgba(41, 128, 185, 0.08);
+    color: #2980B9;
+}
+
+.notif-item__icon-wrapper--stock {
+    background: rgba(39, 174, 96, 0.08);
+    color: #27AE60;
+}
+
+.notif-item__icon-wrapper svg {
+    width: 18px;
+    height: 18px;
+}
+
+.notif-item__content {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.notif-item__title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    line-height: 1.3;
+}
+
+.notif-item__desc {
+    font-size: 0.78rem;
+    color: var(--color-text-secondary);
+    line-height: 1.45;
+}
+
+.notif-item__time {
+    font-size: 0.7rem;
+    color: var(--color-text-light);
+    margin-top: 2px;
+}
+
+.btn-clear-notif {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--color-primary);
+    background: transparent;
+    color: var(--color-primary);
+    font-size: 0.82rem;
+    font-weight: 700;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: center;
+}
+
+.btn-clear-notif:hover {
+    background: var(--color-primary);
+    color: white;
+}
+
+/* ── Settings Drawer ─────────────────────────────────────── */
+.settings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.settings-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.settings-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.settings-item--vertical {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+}
+
+.settings-item__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+}
+
+.settings-item__title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+.settings-item__desc {
+    font-size: 0.78rem;
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+}
+
+.select-wrapper-settings {
+    position: relative;
+    width: 100%;
+}
+
+.settings-version {
+    font-size: 0.75rem;
+    color: var(--color-text-light);
+    text-align: center;
+}
+
+/* ── Toggle Switch (Checkbox Slider) ─────────────────────── */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: var(--color-border);
+    transition: .3s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .3s;
+}
+
+input:checked + .slider {
+    background-color: var(--color-primary);
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px var(--color-primary);
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+}
+
 
