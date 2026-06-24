@@ -3342,7 +3342,7 @@ button {
 }
 .info-card__map-wrapper {
     position: relative;
-    height: 130px;
+    height: 220px;
     border-radius: var(--radius-md);
     overflow: hidden;
     box-shadow: var(--shadow-sm);

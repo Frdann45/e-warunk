@@ -173,21 +173,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 </div>
                 <p class="info-card__address-text">Jl. Bungursari, kelurahan Bungursari, kecamatan Bungursari, kota Tasikmalaya</p>
                 
-                <!-- SVG map rendering -->
+                <!-- Google Maps iframe rendering -->
                 <div class="info-card__map-wrapper">
-                    <img src="images/map-location.svg" alt="Lokasi Toko" class="info-card__map-img">
-                    <div class="info-card__map-controls">
-                        <button class="map-ctrl-btn" title="Perbesar">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                            </svg>
-                        </button>
-                        <button class="map-ctrl-btn" title="Perkecil">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                <line x1="5" y1="12" x2="19" y2="12"/>
-                            </svg>
-                        </button>
-                    </div>
+                    <iframe 
+                        src="https://maps.google.com/maps?q=Warung%20Super,%20Bungursari,%20Tasikmalaya&t=&z=17&ie=UTF8&iwloc=&output=embed" 
+                        width="100%" 
+                        height="100%" 
+                        style="border:0; display:block;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
                 </div>
             </div>
         </div>
