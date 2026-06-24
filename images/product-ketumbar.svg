@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="100%" height="100%">
+  <defs>
+    <linearGradient id="grad_product-ketumbar.jpg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D35400" />
+      <stop offset="100%" stop-color="#7E3D11" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000000" flood-opacity="0.15" />
+    </filter>
+  </defs>
+  <rect width="400" height="300" rx="16" fill="url(#grad_product-ketumbar.jpg)" />
+  <g transform="translate(200, 130)" filter="url(#shadow)">
+    <circle cx="0" cy="0" r="25" fill="none" stroke="#FFFFFF" stroke-width="3"/><circle cx="0" cy="-6" r="3" fill="#FFFFFF"/><circle cx="-6" cy="6" r="3" fill="#FFFFFF"/><circle cx="6" cy="6" r="3" fill="#FFFFFF"/>
+  </g>
+  <text x="200" y="235" fill="#FFFFFF" font-family="'Plus Jakarta Sans', sans-serif" font-size="20" font-weight="700" text-anchor="middle" letter-spacing="1">KETUMBAR BIJI</text>
+  <text x="200" y="260" fill="rgba(255, 255, 255, 0.75)" font-family="'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="500" text-anchor="middle">Ketumbar Biji 100g</text>
+</svg>
