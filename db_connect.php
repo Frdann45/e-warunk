@@ -50,3 +50,50 @@ function getDBConnection(): PDO
 
 // Create a global connection instance
 $pdo = getDBConnection();
+
+/**
+ * Get local product image path by name.
+ *
+ * @param  string $name
+ * @return string
+ */
+function getProductImage(string $name): string
+{
+    $map = [
+        // Sembako
+        'Beras Premium' => 'images/product-beras.jpg',
+        'Minyak Goreng' => 'images/product-minyak.jpg',
+        'Beras Rojolele Premium 5kg' => 'images/rojolele.jpg',
+        'Minyak Goreng Bimoli 2L' => 'images/bimoli.jpeg',
+        'Bawang Merah Brebes 500g' => 'images/bawang.jpeg',
+
+        // Rempah-rempah
+        'Lada Putih Butir' => 'images/lada.jpeg',
+        'Lada Putih Bubuk' => 'images/lada.jpeg',
+        'Ketumbar Biji' => 'images/ketumbar.jpeg',
+        'Ketumbar' => 'images/ketumbar.jpeg',
+        'Cengkeh Kering' => 'images/cengkeh.jpeg',
+        'Cengkeh' => 'images/cengkeh.jpeg',
+        'Kayu Manis Batang' => 'images/kayumanis.jpeg',
+        'Kayu Manis' => 'images/kayumanis.jpeg',
+
+        // Camilan
+        'Nastar Klasik Premium' => 'images/nastar.jpeg',
+        'Kacang Atom Garuda' => 'images/katom.jpeg',
+        'Keripik Singkong Pedas' => 'images/pikdas.jpeg',
+        'Stik Keju Edam' => 'images/stik.jpeg',
+        'Kerupuk Udang Renyah' => 'images/kerupuk.jpeg',
+        'Keripik Pisang Manis' => 'images/kerpis.jpeg',
+
+        // Promo
+        'Minyak Goreng SunCo 2L' => 'images/minyaks.jpeg',
+        'Telur Ayam Negeri 1kg' => 'images/telur.jpeg',
+        'Gula Pasir Gulaku 1kg' => 'images/gula.jpeg',
+        'Teh Celup Premium 25s' => 'images/celup.jpeg',
+        'Tepung Terigu Segitiga Biru 1kg' => 'images/setbir.jpeg',
+        'Paket Sembako Berkah' => 'images/paket.jpeg'
+    ];
+
+    return $map[$name] ?? 'images/logo.png';
+}
+

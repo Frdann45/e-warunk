@@ -154,7 +154,7 @@
             <div class="about-footer__links-col">
                 <h4 class="about-footer__col-title">Tautan Cepat</h4>
                 <ul class="about-footer__links-list">
-                    <li><a href="index.php?page=sembako">Beranda</a></li>
+                    <li><a href="index.php?page=beranda">Beranda</a></li>
                     <li><a href="index.php?page=tentang">Tentang Kami</a></li>
                     <li><a href="index.php?page=promo">Promo Bulanan</a></li>
                     <li><a href="index.php?page=panduan">Panduan Belanja</a></li>

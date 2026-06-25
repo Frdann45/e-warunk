@@ -166,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
                                 $qty = $item['qty']; 
                                 $sub = $item['subtotal']; ?>
                                 <div class="checkout-item-row">
-                                    <img src="<?= htmlspecialchars($p['image_url']) ?>" alt="<?= htmlspecialchars($p['name']) ?>" class="checkout-item-row__image">
+                                    <img src="<?= htmlspecialchars(getProductImage($p['name'])) ?>" alt="<?= htmlspecialchars($p['name']) ?>" class="checkout-item-row__image">
                                     <div class="checkout-item-row__info">
                                         <h4 class="checkout-item-row__name"><?= htmlspecialchars($p['name']) ?></h4>
                                         <p class="checkout-item-row__qty"><?= $qty ?> x <?= formatRupiah((float) $p['price']) ?></p>

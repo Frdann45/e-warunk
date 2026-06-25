@@ -157,6 +157,7 @@ button {
     width: 28px;
     height: 28px;
     object-fit: contain;
+    border-radius: 50%;
 }
 
 .navbar__title {
@@ -4118,6 +4119,6 @@ input:checked + .slider:before {
 .slider.round:before {
     border-radius: 50%;
 }
-}
+
 
 

@@ -77,16 +77,16 @@ try {
             // Custom card details based on design
             $desc = '';
             switch ($product['name']) {
-                case 'Lada Putih Butir':
+                case 'Lada Putih Bubuk':
                     $desc = 'Lada putih asli Bangka, aroma kuat dan pedas...';
                     break;
-                case 'Ketumbar Biji':
+                case 'Ketumbar':
                     $desc = 'Ketumbar pilihan yang telah disortir, bersih dari kotoran...';
                     break;
-                case 'Cengkeh Kering':
+                case 'Cengkeh':
                     $desc = 'Cengkeh kualitas super dengan minyak atsiri tinggi...';
                     break;
-                case 'Kayu Manis Batang':
+                case 'Kayu Manis':
                     $desc = 'Kayu manis asli Kerinci, aroma manis dan legit...';
                     break;
             }
@@ -94,7 +94,7 @@ try {
             <div class="product-card fade-in" id="product-<?= htmlspecialchars($product['id']) ?>">
                 <div class="product-card__image-wrapper">
                     <img 
-                        src="<?= htmlspecialchars($product['image_url']) ?>" 
+                        src="<?= htmlspecialchars(getProductImage($product['name'])) ?>" 
                         alt="<?= htmlspecialchars($product['name']) ?>" 
                         class="product-card__image"
                         loading="lazy"

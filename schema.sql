@@ -66,7 +66,7 @@ INSERT INTO `products` (`name`, `category`, `unit_desc`, `price`, `image_url`, `
 -- Sembako
 ('Beras Premium',   'Sembako',        '5 kg / Karung',      65000.00, 'images/product-beras.jpg',   'PALING LARIS'),
 ('Minyak Goreng',   'Sembako',        '2 Liter / Pouch',    32000.00, 'images/product-minyak.jpg',  NULL),
-('Beras Rojolele Premium 5kg', 'Sembako', '5 kg / Karung', 65000.00, 'images/product-rojolele.svg', NULL),
+('Beras Rojolele Premium 5kg', 'Sembako', '5 kg / Karung', 65000.00, 'images/rojolele.jpg', NULL),
 ('Minyak Goreng Bimoli 2L', 'Sembako', '2 Liter / Pouch',  38000.00, 'images/product-bimoli.svg',  NULL),
 ('Bawang Merah Brebes 500g', 'Sembako', '500 gram',         22000.00, 'images/product-bawangmerah.svg', NULL),
 ('Paket Sayur Sop Segar', 'Sembako',  '1 Paket Lengkap',    15000.00, 'images/product-sayursop.svg', NULL),

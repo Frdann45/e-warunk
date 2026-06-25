@@ -85,7 +85,7 @@ foreach ($snacks as $snack) {
     <!-- Card 1: Kerupuk Udang -->
     <?php if (isset($featuredSnacks['Kerupuk Udang Renyah'])): 
         $ks = $featuredSnacks['Kerupuk Udang Renyah']; ?>
-        <div class="featured-card featured-card--udang" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('<?= htmlspecialchars($ks['image_url']) ?>');">
+        <div class="featured-card featured-card--udang" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('<?= htmlspecialchars(getProductImage($ks['name'])) ?>');">
             <span class="featured-card__badge">TERLARIS</span>
             <div class="featured-card__content">
                 <h2 class="featured-card__title"><?= htmlspecialchars($ks['name']) ?></h2>
@@ -105,7 +105,7 @@ foreach ($snacks as $snack) {
     <!-- Card 2: Keripik Pisang -->
     <?php if (isset($featuredSnacks['Keripik Pisang Manis'])): 
         $kp = $featuredSnacks['Keripik Pisang Manis']; ?>
-        <div class="featured-card featured-card--pisang" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('<?= htmlspecialchars($kp['image_url']) ?>');">
+        <div class="featured-card featured-card--pisang" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('<?= htmlspecialchars(getProductImage($kp['name'])) ?>');">
             <div class="featured-card__content">
                 <h2 class="featured-card__title"><?= htmlspecialchars($kp['name']) ?></h2>
                 <p class="featured-card__desc">Irisan tipis, manis pas.</p>
@@ -147,7 +147,7 @@ foreach ($snacks as $snack) {
             <div class="product-card fade-in" id="product-<?= htmlspecialchars($product['id']) ?>">
                 <div class="product-card__image-wrapper">
                     <img 
-                        src="<?= htmlspecialchars($product['image_url']) ?>" 
+                        src="<?= htmlspecialchars(getProductImage($product['name'])) ?>" 
                         alt="<?= htmlspecialchars($product['name']) ?>" 
                         class="product-card__image"
                         loading="lazy"

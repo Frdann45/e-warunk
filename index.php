@@ -13,7 +13,7 @@ if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])) {
 $cartCount = array_sum($_SESSION['cart']);
 
 // Dynamic page routing
-$page = isset($_GET['page']) ? $_GET['page'] : 'sembako';
+$page = isset($_GET['page']) ? $_GET['page'] : 'beranda';
 
 // Check for flash message
 $cartMessage = null;
@@ -62,7 +62,7 @@ $userStatus   = $isLoggedIn
          ═══════════════════════════════════════════════════════ -->
     <nav class="navbar" id="navbar">
         <!-- Brand -->
-        <a href="index.php?page=sembako" class="navbar__brand">
+        <a href="index.php?page=beranda" class="navbar__brand">
             <span class="navbar__logo">
                 <img src="images/logo.png" alt="Logo Warung Tiga Saudara">
             </span>
@@ -74,7 +74,7 @@ $userStatus   = $isLoggedIn
 
         <!-- Navigation Links -->
         <div class="navbar__links">
-            <a href="index.php?page=sembako" class="navbar__link <?= in_array($page, ['sembako', 'rempah', 'camilan']) ? 'navbar__link--active' : '' ?>" id="nav-beranda">Beranda</a>
+            <a href="index.php?page=beranda" class="navbar__link <?= $page === 'beranda' ? 'navbar__link--active' : '' ?>" id="nav-beranda">Beranda</a>
             <a href="index.php?page=tentang" class="navbar__link <?= $page === 'tentang' ? 'navbar__link--active' : '' ?>" id="nav-tentang">Tentang Kami</a>
             <a href="index.php?page=promo" class="navbar__link <?= $page === 'promo' ? 'navbar__link--active' : '' ?>" id="nav-promo">Promo Bulanan</a>
             <a href="index.php?page=panduan" class="navbar__link <?= $page === 'panduan' ? 'navbar__link--active' : '' ?>" id="nav-panduan">Panduan Belanja</a>
@@ -307,8 +307,11 @@ $userStatus   = $isLoggedIn
                     include __DIR__ . '/pages/kontak.php';
                     break;
                 case 'sembako':
-                default:
                     include __DIR__ . '/pages/sembako.php';
+                    break;
+                case 'beranda':
+                default:
+                    include __DIR__ . '/pages/beranda.php';
                     break;
             }
             ?>
@@ -318,7 +321,7 @@ $userStatus   = $isLoggedIn
     <!-- ═══════════════════════════════════════════════════════
          FOOTER
          ═══════════════════════════════════════════════════════ -->
-    <?php if (in_array($page, ['sembako', 'rempah', 'camilan', 'keranjang', 'pembayaran', 'riwayat'])): ?>
+    <?php if (in_array($page, ['beranda', 'sembako', 'rempah', 'camilan', 'keranjang', 'pembayaran', 'riwayat'])): ?>
     <footer class="footer" id="footer">
         <span>&copy; 2026 Warung Tiga Saudara. All rights reserved.</span>
         <div class="footer__links">

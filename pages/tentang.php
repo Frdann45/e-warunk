@@ -11,7 +11,7 @@
     <!-- Hero Section -->
     <div class="about-hero">
         <div class="about-hero__content">
-            <span class="about-hero__badge">ESTABLISHED 1998</span>
+            <span class="about-hero__badge">ESTABLISHED 2015</span>
             <h1 class="about-hero__title">Dedikasi Tiga Saudara<br>Untuk Kebutuhan Anda.</h1>
             <p class="about-hero__desc">
                 Berawal dari kios kecil di sudut kota, kini kami tumbuh menjadi pusat kebutuhan harian yang 
@@ -19,7 +19,7 @@
             </p>
         </div>
         <div class="about-hero__image-wrapper">
-            <img src="images/about-hero.png" alt="Supermarket Staff" class="about-hero__image">
+            <img src="images/warung.webp" alt="Supermarket Staff" class="about-hero__image">
         </div>
     </div>
 
@@ -163,7 +163,7 @@
             <div class="about-footer__links-col">
                 <h4 class="about-footer__col-title">Tautan Cepat</h4>
                 <ul class="about-footer__links-list">
-                    <li><a href="index.php?page=sembako">Beranda</a></li>
+                    <li><a href="index.php?page=beranda">Beranda</a></li>
                     <li><a href="index.php?page=tentang">Tentang Kami</a></li>
                     <li><a href="index.php?page=promo">Promo Bulanan</a></li>
                     <li><a href="index.php?page=panduan">Panduan Belanja</a></li>

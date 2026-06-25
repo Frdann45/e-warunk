@@ -79,7 +79,7 @@ $totalBill = $totalOriginal - $promoDiscount + $serviceFee;
                 $qty = $item['qty']; 
                 $sub = $item['subtotal']; ?>
                 <div class="cart-card">
-                    <img src="<?= htmlspecialchars($p['image_url']) ?>" alt="<?= htmlspecialchars($p['name']) ?>" class="cart-card__image">
+                    <img src="<?= htmlspecialchars(getProductImage($p['name'])) ?>" alt="<?= htmlspecialchars($p['name']) ?>" class="cart-card__image">
                     
                     <div class="cart-card__details">
                         <span class="cart-card__category"><?= htmlspecialchars($p['category']) ?></span>
