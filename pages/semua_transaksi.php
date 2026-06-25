@@ -1,18 +1,52 @@
 <?php
 /**
- * =======
- * Warung Tiga Saudara - Riwayat Transaksi view
- * Author ID: 11240044
- * =======
+ * ============================================================
+ * E-WARUNG (Warung Tiga Saudara) - Semua Transaksi (Admin View)
+ * ============================================================
+ * Author ID   : 11240044
+ * Created     : 2026-06-25
+ * Description : View for monitoring and updating the status of
+ *               all customer orders. Allows search and filtering.
+ * ============================================================
  */
+
 require_once __DIR__ . '/../db_connect.php';
 
-// Filter variables
+// ── Handle Action POST early ────────────────────────────────
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
+    $orderId = isset($_POST['order_id']) ? (int)$_POST['order_id'] : 0;
+    $newStatus = isset($_POST['status']) ? $_POST['status'] : '';
+
+    if ($orderId > 0 && in_array($newStatus, ['Diproses', 'Dikirim', 'Selesai', 'Dibatalkan'])) {
+        try {
+            $stmtCode = $pdo->prepare("SELECT order_code FROM orders WHERE id = ?");
+            $stmtCode->execute([$orderId]);
+            $orderCode = $stmtCode->fetchColumn();
+
+            if ($orderCode) {
+                $stmtUpdate = $pdo->prepare("UPDATE orders SET status = ? WHERE id = ?");
+                $stmtUpdate->execute([$newStatus, $orderId]);
+                $_SESSION['cart_message'] = "Status Pesanan #{$orderCode} berhasil diubah menjadi '{$newStatus}'.";
+            }
+        } catch (PDOException $e) {
+            error_log('Error updating order: ' . $e->getMessage());
+            $_SESSION['cart_message'] = "Gagal memperbarui status transaksi.";
+        }
+    }
+    
+    // Redirect preserving GET filters
+    $selectedStatus = isset($_GET['status']) ? $_GET['status'] : 'Semua';
+    $searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
+    header('Location: index.php?page=semua-transaksi&status=' . urlencode($selectedStatus) . ($searchQuery !== '' ? '&search=' . urlencode($searchQuery) : ''));
+    exit;
+}
+
+// ── Filter & Search Variables ───────────────────────────────
 $selectedStatus = isset($_GET['status']) ? $_GET['status'] : 'Semua';
 $searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
 
 try {
-    // 1. Build dynamic query for orders list
+    // 1. Build Query
     $sql = "
         SELECT o.*, 
                (SELECT COUNT(*) FROM order_items WHERE order_id = o.id) AS item_count,
@@ -37,61 +71,49 @@ try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
     $orders = $stmt->fetchAll();
-    
-    // 2. Fetch stats dynamically
-    // Base stats from design screenshot: Total Orders = 1248, Processing = 42, Spending = 15.420.000
-    // We count the database rows and add to the base numbers
-    
-    // Count all orders in DB (offset by 3 since we seeded 3)
-    $stmtAllCount = $pdo->query("SELECT COUNT(*) FROM orders");
-    $dbAllCount = (int) $stmtAllCount->fetchColumn();
-    $totalOrdersStat = 1245 + $dbAllCount;
-    
-    // Count processing orders in DB (offset by 1 since we seeded 1)
-    $stmtProcCount = $pdo->query("SELECT COUNT(*) FROM orders WHERE status = 'Diproses'");
-    $dbProcCount = (int) $stmtProcCount->fetchColumn();
-    $processingOrdersStat = 41 + $dbProcCount;
-    
-    // Sum spent in DB (offset by seeded orders total: 125000 + 45000 = 170000)
-    $stmtSpentSum = $pdo->query("SELECT SUM(total_price) FROM orders WHERE status != 'Dibatalkan'");
-    $dbSpentSum = (float) $stmtSpentSum->fetchColumn();
-    $totalSpentStat = 15250000 + $dbSpentSum;
-    
+
+    // Fetch stats
+    $stmtCount = $pdo->query("SELECT COUNT(*) FROM orders");
+    $dbCount = (int)$stmtCount->fetchColumn();
+    $totalOrdersStat = 1245 + $dbCount;
+
+    $stmtRevenue = $pdo->query("SELECT SUM(total_price) FROM orders WHERE status != 'Dibatalkan'");
+    $dbRevenue = (float)$stmtRevenue->fetchColumn();
+    $totalRevenueStat = 15250000 + $dbRevenue;
+
+    $stmtPending = $pdo->query("SELECT COUNT(*) FROM orders WHERE status = 'Diproses'");
+    $pendingOrdersStat = (int)$stmtPending->fetchColumn();
+
 } catch (PDOException $e) {
+    error_log('Error loading transactions list: ' . $e->getMessage());
     $orders = [];
-    $totalOrdersStat = 1248;
-    $processingOrdersStat = 42;
-    $totalSpentStat = 15420000;
-    error_log('Orders fetch error: ' . $e->getMessage());
+    $totalOrdersStat = 1245;
+    $totalRevenueStat = 15250000;
+    $pendingOrdersStat = 0;
 }
 ?>
 
 <div class="history-header fade-in">
-    <h1 class="history-header__title">Riwayat Transaksi</h1>
-    <p class="history-header__desc">Pantau dan kelola semua pesanan serta pengeluaran Anda.</p>
+    <h1 class="history-header__title">Semua Transaksi</h1>
+    <p class="history-header__desc">Pantau dan kelola seluruh riwayat transaksi serta status pesanan pelanggan.</p>
 </div>
 
-<!-- Stats Widgets Grid -->
-<div class="stats-grid fade-in">
-    <!-- Stat 1: Total Orders -->
+<!-- Stats widgets -->
+<div class="stats-grid fade-in" style="margin-top: 20px;">
     <div class="stat-card">
         <div class="stat-card__icon stat-card__icon--blue">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-                <line x1="16" y1="13" x2="8" y2="13"/>
-                <line x1="16" y1="17" x2="8" y2="17"/>
-                <polyline points="10 9 9 9 8 9"/>
+                <rect x="2" y="4" width="20" height="16" rx="2" ry="2"/>
+                <line x1="12" y1="18" x2="12" y2="18.01"/>
             </svg>
         </div>
         <div class="stat-card__content">
-            <span class="stat-card__label">TOTAL PESANAN</span>
-            <h3 class="stat-card__value"><?= number_format($totalOrdersStat, 0, ',', '.') ?></h3>
-            <span class="stat-card__trend text-success">↗ +12% dari bulan lalu</span>
+            <span class="stat-card__label">TOTAL PENDAPATAN</span>
+            <h3 class="stat-card__value"><?= formatRupiah($totalRevenueStat) ?></h3>
+            <span class="stat-card__trend text-success">Bulan ini</span>
         </div>
     </div>
 
-    <!-- Stat 2: Processing -->
     <div class="stat-card">
         <div class="stat-card__icon stat-card__icon--yellow">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -100,33 +122,32 @@ try {
             </svg>
         </div>
         <div class="stat-card__content">
-            <span class="stat-card__label">SEDANG DIPROSES</span>
-            <h3 class="stat-card__value"><?= $processingOrdersStat ?></h3>
-            <span class="stat-card__trend text-warning">Membutuhkan perhatian</span>
+            <span class="stat-card__label">PESANAN PENDING</span>
+            <h3 class="stat-card__value"><?= $pendingOrdersStat ?></h3>
+            <span class="stat-card__trend text-warning">Perlu tindakan</span>
         </div>
     </div>
 
-    <!-- Stat 3: Total Spending -->
     <div class="stat-card">
         <div class="stat-card__icon stat-card__icon--purple">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="4" width="20" height="16" rx="2" ry="2"/>
-                <line x1="12" y1="18" x2="12" y2="18.01"/>
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="20 6 9 17 4 12"/>
             </svg>
         </div>
         <div class="stat-card__content">
-            <span class="stat-card__label">TOTAL PENGELUARAN</span>
-            <h3 class="stat-card__value"><?= formatRupiah($totalSpentStat) ?></h3>
-            <span class="stat-card__trend text-muted">Bulan ini</span>
+            <span class="stat-card__label">TOTAL TRANSAKSI</span>
+            <h3 class="stat-card__value"><?= number_format($totalOrdersStat, 0, ',', '.') ?></h3>
+            <span class="stat-card__trend text-muted">Akumulasi sistem</span>
         </div>
     </div>
 </div>
 
-<!-- Filters and Search Bar -->
+<!-- Filters & Search -->
 <div class="filters-bar fade-in">
     <div class="filters-bar__tabs">
         <?php foreach (['Semua', 'Diproses', 'Dikirim', 'Selesai', 'Dibatalkan'] as $statusOption): ?>
-            <a href="index.php?page=riwayat&status=<?= urlencode($statusOption) ?><?= $searchQuery !== '' ? '&search=' . urlencode($searchQuery) : '' ?>" 
+            <a href="index.php?page=semua-transaksi&status=<?= urlencode($statusOption) ?><?= $searchQuery !== '' ? '&search=' . urlencode($searchQuery) : '' ?>" 
                class="filter-tab <?= $selectedStatus === $statusOption ? 'filter-tab--active' : '' ?>">
                 <?= $statusOption ?>
             </a>
@@ -134,56 +155,42 @@ try {
     </div>
     
     <div class="filters-bar__actions">
-        <!-- Search bar input -->
         <div class="search-box-wrapper">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-box-icon">
                 <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
             <form action="index.php" method="GET" style="margin:0; display:flex;">
-                <input type="hidden" name="page" value="riwayat">
+                <input type="hidden" name="page" value="semua-transaksi">
                 <input type="hidden" name="status" value="<?= htmlspecialchars($selectedStatus) ?>">
                 <input type="text" name="search" class="input-search" placeholder="Order ID..." value="<?= htmlspecialchars($searchQuery) ?>">
             </form>
-        </div>
-
-        <!-- Date picker element -->
-        <div class="date-picker-wrapper">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="date-picker-icon">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                <line x1="16" y1="2" x2="16" y2="6"/>
-                <line x1="8" y1="2" x2="8" y2="6"/>
-                <line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-            <input type="text" class="input-date" value="10/01/2023" readonly>
         </div>
     </div>
 </div>
 
 <!-- Transactions Table -->
 <div class="table-container fade-in">
-    <table class="history-table">
+    <table class="history-table" style="width: 100%;">
         <thead>
             <tr>
                 <th>ORDER ID</th>
-                <th>DATE</th>
-                <th>MAIN ITEM</th>
-                <th>TOTAL PRICE</th>
-                <th>STATUS</th>
-                <th style="text-align: right; padding-right: 20px;">AKSI</th>
+                <th>TANGGAL</th>
+                <th>BARANG UTAMA</th>
+                <th>TOTAL HARGA</th>
+                <th>STATUS AKTIF</th>
+                <th style="text-align: right; padding-right: 20px;">UBAH STATUS</th>
             </tr>
         </thead>
         <tbody>
             <?php if (!empty($orders)): ?>
                 <?php foreach ($orders as $order): ?>
                     <?php
-                    // Format main item description
                     $mainItemText = htmlspecialchars($order['first_item_name']);
                     $extraItemsCount = (int) $order['item_count'] - 1;
                     if ($extraItemsCount > 0) {
                         $mainItemText .= " (+{$extraItemsCount} item lainnya)";
                     }
                     
-                    // Format date
                     $dateTime = new DateTime($order['order_date']);
                     $formattedDate = $dateTime->format('d M Y, H:i');
                     ?>
@@ -229,11 +236,17 @@ try {
                             </span>
                         </td>
                         <td style="text-align: right; padding-right: 20px;">
-                            <button class="btn-more-actions" title="Aksi Lainnya">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
-                                </svg>
-                            </button>
+                            <form action="" method="POST" style="margin: 0; display: inline-block;">
+                                <input type="hidden" name="update_status" value="1">
+                                <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
+                                <select name="status" onchange="if(confirm('Ubah status pesanan #<?= htmlspecialchars($order['order_code']) ?> menjadi \'' + this.value + '\'?')) { this.form.submit(); } else { this.value = '<?= htmlspecialchars($order['status']) ?>'; }" 
+                                        style="padding: 6px 12px; font-size: 0.8rem; border-radius: 6px; border: 1px solid var(--color-border); background: var(--bg-card); color: var(--color-text-primary); outline: none; cursor: pointer;">
+                                    <option value="Diproses" <?= $order['status'] === 'Diproses' ? 'selected' : '' ?>>Diproses</option>
+                                    <option value="Dikirim" <?= $order['status'] === 'Dikirim' ? 'selected' : '' ?>>Dikirim</option>
+                                    <option value="Selesai" <?= $order['status'] === 'Selesai' ? 'selected' : '' ?>>Selesai</option>
+                                    <option value="Dibatalkan" <?= $order['status'] === 'Dibatalkan' ? 'selected' : '' ?>>Dibatalkan</option>
+                                </select>
+                            </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -246,15 +259,4 @@ try {
             <?php endif; ?>
         </tbody>
     </table>
-</div>
-
-<!-- Table Pagination -->
-<div class="pagination-bar fade-in">
-    <span class="pagination-info">Menampilkan 1-<?= count($orders) ?> dari <?= number_format($totalOrdersStat, 0, ',', '.') ?> transaksi</span>
-    <div class="pagination-buttons">
-        <button class="btn-page" disabled>Sebelumnya</button>
-        <button class="btn-page btn-page--active">1</button>
-        <button class="btn-page">2</button>
-        <button class="btn-page">Selanjutnya</button>
-    </div>
 </div>

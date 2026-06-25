@@ -1628,6 +1628,14 @@ button {
     background: rgba(142, 68, 173, 0.08);
     color: #8E44AD;
 }
+.stat-card__icon--green {
+    background: rgba(39, 174, 96, 0.08);
+    color: #27AE60;
+}
+.stat-card__icon--red {
+    background: rgba(231, 76, 60, 0.08);
+    color: #E74C3C;
+}
 .stat-card__icon svg {
     width: 22px;
     height: 22px;
@@ -1812,6 +1820,10 @@ button {
 .status-badge--dibatalkan {
     background: rgba(231, 76, 60, 0.08);
     color: #E74C3C;
+}
+.status-badge--dikirim {
+    background: rgba(41, 128, 185, 0.08);
+    color: #2980B9;
 }
 .status-badge__icon {
     width: 12px;
@@ -4119,6 +4131,46 @@ input:checked + .slider:before {
 .slider.round:before {
     border-radius: 50%;
 }
+
+/* ── Admin Action Buttons ──────────────────────────────────── */
+.btn-admin {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 16px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    border: none;
+    font-family: inherit;
+}
+.btn-admin--primary {
+    background: var(--color-primary);
+    color: white;
+}
+.btn-admin--primary:hover {
+    background: var(--color-primary-hover, #5A2F15);
+}
+.btn-admin--secondary {
+    background: var(--bg);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+}
+.btn-admin--secondary:hover {
+    background: var(--color-border-light);
+}
+.btn-admin--danger {
+    background: rgba(231, 76, 60, 0.1);
+    color: #E74C3C;
+}
+.btn-admin--danger:hover {
+    background: rgba(231, 76, 60, 0.2);
+}
+
 
 
 

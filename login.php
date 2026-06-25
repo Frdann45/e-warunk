@@ -674,13 +674,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="login-footer">
             &copy; 2026 Warung Tiga Saudara. Dikelola dengan ❤ oleh Tiga Saudara.
         </div>
-
-        <!-- Dev Credentials Hint -->
-        <div class="login-dev-hint">
-            <strong>🔑 Akun Testing:</strong>
-            Admin → <code>admin@ewarung.com</code> / <code>admin123</code><br>
-            User &nbsp;→ <code>budi@ewarung.com</code> / <code>user123</code>
-        </div>
     </div>
 
 </div>

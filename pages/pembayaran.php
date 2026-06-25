@@ -51,57 +51,8 @@ $addressName = 'Budi Santoso';
 $addressPhone = '+62 812 3456 7890';
 $addressText = "Jl. Kebon Kacang Raya No. 15, RT.01/RW.02\nTanah Abang, Jakarta Pusat\nDKI Jakarta 10240";
 
-// Handle checkout submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
-    if (empty($cartItems)) {
-        $_SESSION['cart_message'] = 'Keranjang kosong, gagal membuat pesanan.';
-        header('Location: index.php?page=sembako');
-        exit;
-    }
-    
-    $paymentMethod = isset($_POST['payment_method']) ? $_POST['payment_method'] : 'Bank Transfer';
-    $orderCode = 'ORD-' . date('Ymd') . '-' . rand(1000, 9999);
-    $fullAddress = "{$addressName}\n{$addressPhone}\n{$addressText}";
-    
-    try {
-        $pdo->beginTransaction();
-        
-        // 1. Insert order
-        $stmtOrder = $pdo->prepare("
-            INSERT INTO orders (order_code, order_date, total_price, shipping_address, payment_method, status) 
-            VALUES (?, NOW(), ?, ?, ?, 'Diproses')
-        ");
-        $stmtOrder->execute([$orderCode, $totalBill, $fullAddress, $paymentMethod]);
-        $orderId = $pdo->lastInsertId();
-        
-        // 2. Insert order items
-        $stmtItem = $pdo->prepare("
-            INSERT INTO order_items (order_id, product_name, quantity, price) 
-            VALUES (?, ?, ?, ?)
-        ");
-        foreach ($cartItems as $item) {
-            $stmtItem->execute([
-                $orderId, 
-                $item['product']['name'], 
-                $item['qty'], 
-                $item['product']['price']
-            ]);
-        }
-        
-        $pdo->commit();
-        
-        // 3. Clear cart and set success message
-        $_SESSION['cart'] = [];
-        $_SESSION['cart_message'] = 'Pembayaran Berhasil! Pesanan Anda sedang diproses.';
-        header('Location: index.php?page=riwayat');
-        exit;
-        
-    } catch (Exception $e) {
-        $pdo->rollBack();
-        error_log('Order submission error: ' . $e->getMessage());
-        $_SESSION['cart_message'] = 'Terjadi kesalahan sistem, silakan coba lagi.';
-    }
-}
+// Note: Checkout POST submission is handled by pembayaran_process.php
+// (included early in index.php before HTML output to allow header redirects).
 ?>
 
 <div class="checkout-header fade-in">
