@@ -1,7 +1,7 @@
 <?php
 /**
  * =======
- * Warung Tiga Saudara - Sembako view
+ * Warung Tiga Saudara - Minuman view
  * Author ID: 11240044
  * =======
  */
@@ -11,23 +11,23 @@ $searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
 
 try {
     if ($searchQuery !== '') {
-        $stmt = $pdo->prepare("SELECT * FROM products WHERE category = 'Sembako' AND name LIKE ? ORDER BY id ASC LIMIT 5");
+        $stmt = $pdo->prepare("SELECT * FROM products WHERE category = 'Minuman' AND name LIKE ? ORDER BY id ASC LIMIT 10");
         $stmt->execute(['%' . $searchQuery . '%']);
     } else {
-        $stmt = $pdo->prepare("SELECT * FROM products WHERE category = 'Sembako' ORDER BY id ASC LIMIT 5");
+        $stmt = $pdo->prepare("SELECT * FROM products WHERE category = 'Minuman' ORDER BY id ASC LIMIT 10");
         $stmt->execute();
     }
-    $sembakoProducts = $stmt->fetchAll();
+    $minumanProducts = $stmt->fetchAll();
 } catch (PDOException $e) {
-    $sembakoProducts = [];
-    error_log('Sembako fetch error: ' . $e->getMessage());
+    $minumanProducts = [];
+    error_log('Minuman fetch error: ' . $e->getMessage());
 }
 ?>
 
 <div class="catalog-header fade-in">
     <div>
-        <h1 class="catalog-header__title">Katalog Sembako</h1>
-        <p class="catalog-header__desc">Bahan makanan pokok berkualitas untuk kebutuhan dapur Anda sehari-hari.</p>
+        <h1 class="catalog-header__title">Katalog Minuman</h1>
+        <p class="catalog-header__desc">Air mineral, teh, kopi sachet, susu UHT, minuman bersoda, dan minuman segar lainnya.</p>
     </div>
     <div class="catalog-header__actions">
         <!-- Search bar input -->
@@ -36,8 +36,8 @@ try {
                 <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
             <form action="index.php" method="GET" style="margin:0; display:flex;">
-                <input type="hidden" name="page" value="sembako">
-                <input type="text" name="search" class="input-search" placeholder="Cari sembako..." value="<?= htmlspecialchars($searchQuery) ?>">
+                <input type="hidden" name="page" value="minuman">
+                <input type="text" name="search" class="input-search" placeholder="Cari minuman..." value="<?= htmlspecialchars($searchQuery) ?>">
             </form>
         </div>
         
@@ -69,8 +69,8 @@ try {
     </div>
 </div>
     <div class="products__grid">
-        <?php if (!empty($sembakoProducts)): ?>
-            <?php foreach ($sembakoProducts as $product): ?>
+        <?php if (!empty($minumanProducts)): ?>
+            <?php foreach ($minumanProducts as $product): ?>
                 <div class="product-card fade-in" id="product-<?= htmlspecialchars($product['id']) ?>">
                     <!-- Product Image -->
                     <div class="product-card__image-wrapper">
@@ -97,7 +97,7 @@ try {
                             <span class="product-card__price"><?= formatRupiah((float) $product['price']) ?></span>
                             <form action="cart_action.php" method="POST" style="margin:0;">
                                 <input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>">
-                                <input type="hidden" name="redirect_page" value="sembako<?= $searchQuery !== '' ? '&search=' . urlencode($searchQuery) : '' ?>">
+                                <input type="hidden" name="redirect_page" value="minuman<?= $searchQuery !== '' ? '&search=' . urlencode($searchQuery) : '' ?>">
                                 <button type="submit" class="product-card__cart-btn" title="Tambah ke Keranjang" id="add-cart-<?= (int) $product['id'] ?>">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <circle cx="9" cy="21" r="1"/>
@@ -112,8 +112,7 @@ try {
             <?php endforeach; ?>
         <?php else: ?>
             <div style="grid-column: 1 / -1; text-align: center; padding: 48px 20px; color: var(--color-text-light);">
-                <p>Tidak ada produk kategori Sembako.</p>
+                <p>Tidak ada produk kategori Minuman.</p>
             </div>
         <?php endif; ?>
     </div>
-

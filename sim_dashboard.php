@@ -330,8 +330,16 @@ $page         = 'beranda'; // Set to beranda so sidebar highlights Dashboard lin
 
             </div>
 
-        </main>
     </div>
+    <!-- Footer -->
+    <footer class="footer" id="footer">
+        <span>&copy; 2026 Warung Tiga Saudara. All rights reserved.</span>
+        <div class="footer__links">
+            <a href="#" class="footer__link" id="link-hubungi">Hubungi Kami</a>
+            <a href="#" class="footer__link" id="link-privasi">Kebijakan Privasi</a>
+            <a href="#" class="footer__link" id="link-syarat">Syarat Layanan</a>
+        </div>
+    </footer>
 </div>
 
 <!-- Settings Drawer -->

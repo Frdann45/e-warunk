@@ -176,7 +176,7 @@ foreach ($snacks as $snack) {
                         </div>
                         <form action="cart_action.php" method="POST" style="margin:0;">
                             <input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>">
-                            <input type="hidden" name="redirect_page" value="camilan">
+                            <input type="hidden" name="redirect_page" value="camilan<?= $searchQuery !== '' ? '&search=' . urlencode($searchQuery) : '' ?>">
                             <button type="submit" class="product-card__cart-btn product-card__cart-btn--round" title="Tambah ke Keranjang">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                     <line x1="12" y1="5" x2="12" y2="19"/>

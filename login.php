@@ -14,7 +14,11 @@ session_start();
 
 // If already logged in, redirect based on role
 if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
-    header('Location: index.php');
+    if ($_SESSION['role'] === 'admin') {
+        header('Location: admin.php');
+    } else {
+        header('Location: index.php');
+    }
     exit;
 }
 
@@ -23,6 +27,13 @@ require_once __DIR__ . '/db_connect.php';
 
 // ── Handle Login POST ───────────────────────────────────────
 $errorMessage = '';
+
+// ── Read cart redirect flash message ────────────────────────
+$loginRequiredMessage = '';
+if (isset($_SESSION['login_required_message'])) {
+    $loginRequiredMessage = $_SESSION['login_required_message'];
+    unset($_SESSION['login_required_message']);
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email    = isset($_POST['email'])    ? trim($_POST['email'])    : '';
@@ -43,8 +54,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['email']   = $user['email'];
                 $_SESSION['role']    = $user['role'];
 
-                // ── Redirect to Home Page ───────────────────
-                header('Location: index.php');
+                // ── RBAC Redirect: Admin → admin.php, User → index.php
+                if ($user['role'] === 'admin') {
+                    header('Location: admin.php');
+                } else {
+                    header('Location: index.php');
+                }
                 exit;
             } else {
                 $errorMessage = 'Email atau password salah. Silakan coba lagi.';
@@ -300,6 +315,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .login-alert__icon {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        /* ── Info Alert (cart redirect) ───────────────────── */
+        .login-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: rgba(109, 58, 26, 0.06);
+            border: 1px solid rgba(109, 58, 26, 0.2);
+            border-radius: var(--radius-md);
+            color: var(--primary-dark);
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            animation: fadeInInfo 0.4s ease;
+        }
+
+        @keyframes fadeInInfo {
+            from { opacity: 0; transform: translateY(-4px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-info__icon {
             width: 18px;
             height: 18px;
             flex-shrink: 0;
@@ -595,6 +637,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p class="login-form-panel__desc">Silakan masukkan email dan password yang terdaftar.</p>
         </div>
 
+        <?php if ($loginRequiredMessage !== ''): ?>
+            <div class="login-info">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="login-info__icon">
+                    <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                </svg>
+                <?= htmlspecialchars($loginRequiredMessage) ?>
+            </div>
+        <?php endif; ?>
+
         <?php if ($errorMessage !== ''): ?>
             <div class="login-alert">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="login-alert__icon">
@@ -672,7 +724,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Footer -->
         <div class="login-footer">
-            &copy; 2026 Warung Tiga Saudara. Dikelola dengan ❤ oleh Tiga Saudara.
+            &copy; 2026 Warung Tiga Saudara.
         </div>
     </div>
 

@@ -1,8 +1,28 @@
 <?php
+/**
+ * ============================================================
+ * E-WARUNG (Warung Tiga Saudara) - User Portal (Shopee-Style)
+ * ============================================================
+ * Author ID   : 11240044
+ * Created     : 2026-06-24
+ * Updated     : 2026-07-03
+ * Description : Main entry point for the User (Customer) portal.
+ *               Full-width layout with NO sidebar.
+ *               Uses header_user.php (Shopee-style header).
+ *               Admin users are redirected to admin.php.
+ * ============================================================
+ */
+
 session_start();
 
 // Include database connection
 require_once __DIR__ . '/db_connect.php';
+
+// ── RBAC: Redirect admins to admin portal ───────────────────
+if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+    header('Location: admin.php');
+    exit;
+}
 
 // Initialize cart as associative array [product_id => quantity]
 if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])) {
@@ -15,13 +35,13 @@ $cartCount = array_sum($_SESSION['cart']);
 // Resolve page routing early
 $page = isset($_GET['page']) ? $_GET['page'] : 'beranda';
 
-// Admin pages security check
-$adminPages = ['pesanan-masuk', 'proses-pengiriman', 'semua-transaksi'];
-if (in_array($page, $adminPages)) {
-    if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-        header('Location: login.php');
-        exit;
-    }
+// ── User-only pages whitelist ───────────────────────────────
+$userPages = [
+    'beranda', 'sembako', 'rempah', 'camilan', 'perawatan', 'kesehatan', 'minuman', 'keranjang',
+    'pembayaran', 'riwayat', 'tentang', 'promo', 'panduan', 'kontak', 'pencarian'
+];
+if (!in_array($page, $userPages)) {
+    $page = 'beranda';
 }
 
 // ── Handle checkout POST early (before any HTML output) ─────
@@ -31,21 +51,6 @@ if (
     && isset($_POST['place_order'])
 ) {
     require_once __DIR__ . '/pages/pembayaran_process.php';
-}
-
-// ── Handle Admin POST Actions early (before any HTML output) ──
-if (
-    in_array($page, $adminPages)
-    && $_SERVER['REQUEST_METHOD'] === 'POST'
-    && isset($_POST['update_status'])
-) {
-    if ($page === 'pesanan-masuk') {
-        require_once __DIR__ . '/pages/pesanan_masuk.php';
-    } elseif ($page === 'proses-pengiriman') {
-        require_once __DIR__ . '/pages/proses_pengiriman.php';
-    } elseif ($page === 'semua-transaksi') {
-        require_once __DIR__ . '/pages/semua_transaksi.php';
-    }
 }
 
 // Check for flash message
@@ -61,12 +66,14 @@ if (isset($_SESSION['cart_message'])) {
  * @param  float $price
  * @return string
  */
-function formatRupiah(float $price): string
-{
-    return 'Rp ' . number_format($price, 0, ',', '.');
+if (!function_exists('formatRupiah')) {
+    function formatRupiah(float $price): string
+    {
+        return 'Rp ' . number_format($price, 0, ',', '.');
+    }
 }
 
-// ── Session-based user info for navbar ──────────────────────
+// ── Session-based user info for header ──────────────────────
 $isLoggedIn   = isset($_SESSION['user_id']);
 $userName     = $isLoggedIn ? $_SESSION['name']  : 'Tamu';
 $userRole     = $isLoggedIn ? $_SESSION['role']  : '';
@@ -88,177 +95,82 @@ $userStatus   = $isLoggedIn
     <link rel="icon" type="image/png" href="images/logo.png">
 </head>
 <body>
-<div class="app-layout <?= $page === 'kontak' ? 'app-layout--no-sidebar' : '' ?>">
+<div class="user-layout" id="user-layout">
 
     <!-- ═══════════════════════════════════════════════════════
-         TOP NAVIGATION BAR
+         USER HEADER (Shopee-Style)
          ═══════════════════════════════════════════════════════ -->
-    <nav class="navbar" id="navbar">
-        <!-- Brand -->
-        <a href="index.php?page=beranda" class="navbar__brand">
-            <span class="navbar__logo">
-                <img src="images/logo.png" alt="Logo Warung Tiga Saudara">
-            </span>
-            <span class="navbar__title">Warung Tiga Saudara</span>
-        </a>
-
-        <!-- Navbar Search bar removed (moved to page-level catalogs) -->
-
-
-        <!-- Navigation Links -->
-        <div class="navbar__links">
-            <a href="index.php?page=beranda" class="navbar__link <?= $page === 'beranda' ? 'navbar__link--active' : '' ?>" id="nav-beranda">Beranda</a>
-            <a href="index.php?page=tentang" class="navbar__link <?= $page === 'tentang' ? 'navbar__link--active' : '' ?>" id="nav-tentang">Tentang Kami</a>
-            <a href="index.php?page=promo" class="navbar__link <?= $page === 'promo' ? 'navbar__link--active' : '' ?>" id="nav-promo">Promo Bulanan</a>
-            <a href="index.php?page=panduan" class="navbar__link <?= $page === 'panduan' ? 'navbar__link--active' : '' ?>" id="nav-panduan">Panduan Belanja</a>
-            <a href="index.php?page=kontak" class="navbar__link <?= $page === 'kontak' ? 'navbar__link--active' : '' ?>" id="nav-kontak">Kontak</a>
-        </div>
-
-        <!-- Action Buttons -->
-        <!-- Action Buttons -->
-        <div class="navbar__actions" style="position: relative;">
-            <button class="navbar__action-btn" id="btn-notifications" title="Notifikasi" style="position: relative;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                    <path d="M13.73 21a2 2 0 01-3.46 0"/>
-                </svg>
-                <span class="profile-dropdown__badge" id="navbar-notif-badge" style="position: absolute; top: 0; right: 0; transform: translate(25%, -25%);">3</span>
-            </button>
-            <button class="navbar__action-btn" id="btn-settings" title="Pengaturan">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="3"/>
-                    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
-                </svg>
-            </button>
-            <div class="navbar__avatar" id="user-avatar" title="Profil" style="cursor: pointer; user-select: none;"><?= htmlspecialchars($userInitials) ?></div>
-            
-            <!-- Profile Dropdown Menu -->
-            <div class="profile-dropdown" id="profileDropdown">
-                <div class="profile-dropdown__header">
-                    <div class="profile-dropdown__avatar" id="dropdown-avatar"><?= htmlspecialchars($userInitials) ?></div>
-                    <div class="profile-dropdown__user-details">
-                        <h4 class="profile-dropdown__name" id="dropdown-user-name"><?= htmlspecialchars($userName) ?></h4>
-                        <p class="profile-dropdown__status" id="dropdown-user-status"><?= htmlspecialchars($userStatus) ?></p>
-                    </div>
-                </div>
-                <div class="profile-dropdown__divider"></div>
-                <ul class="profile-dropdown__menu">
-                    <li>
-                        <?php if ($isLoggedIn): ?>
-                        <a href="logout.php" class="profile-dropdown__item" id="menu-login-btn">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="profile-dropdown__icon">
-                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
-                            </svg>
-                            <span>Keluar / Logout</span>
-                        </a>
-                        <?php else: ?>
-                        <a href="login.php" class="profile-dropdown__item" id="menu-login-btn">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="profile-dropdown__icon">
-                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3"/>
-                            </svg>
-                            <span>Masuk / Login</span>
-                        </a>
-                        <?php endif; ?>
-                    </li>
-                    <li>
-                        <button class="profile-dropdown__item" id="menu-notif-btn">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="profile-dropdown__icon">
-                                <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                                <path d="M13.73 21a2 2 0 01-3.46 0"/>
-                            </svg>
-                            <span>Notifikasi</span>
-                            <span class="profile-dropdown__badge" id="dropdown-notif-badge">3</span>
-                        </button>
-                    </li>
-                    <li>
-                        <button class="profile-dropdown__item" id="menu-settings-btn">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="profile-dropdown__icon">
-                                <circle cx="12" cy="12" r="3"/>
-                                <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
-                            </svg>
-                            <span>Pengaturan</span>
-                        </button>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <?php include __DIR__ . '/header_user.php'; ?>
 
     <!-- ═══════════════════════════════════════════════════════
-         BODY: SIDEBAR + MAIN CONTENT
+         MAIN CONTENT AREA — Full Width (No Sidebar)
          ═══════════════════════════════════════════════════════ -->
-    <div class="app-body">
-
-        <!-- ── LEFT SIDEBAR (RBAC Component) ──────────────────── -->
-        <?php if ($page !== 'kontak'): ?>
-            <?php include __DIR__ . '/sidebar.php'; ?>
-        <?php endif; ?>
-
-        <!-- ── MAIN CONTENT AREA ────────────────────────────── -->
-        <main class="main-content" id="main-content">
-            <?php
-            switch ($page) {
-                case 'rempah':
-                    include __DIR__ . '/pages/rempah.php';
-                    break;
-                case 'camilan':
-                    include __DIR__ . '/pages/camilan.php';
-                    break;
-                case 'keranjang':
-                    include __DIR__ . '/pages/keranjang.php';
-                    break;
-                case 'pembayaran':
-                    include __DIR__ . '/pages/pembayaran.php';
-                    break;
-                case 'riwayat':
-                    include __DIR__ . '/pages/riwayat.php';
-                    break;
-                case 'tentang':
-                    include __DIR__ . '/pages/tentang.php';
-                    break;
-                case 'promo':
-                    include __DIR__ . '/pages/promo.php';
-                    break;
-                case 'panduan':
-                    include __DIR__ . '/pages/panduan.php';
-                    break;
-                case 'kontak':
-                    include __DIR__ . '/pages/kontak.php';
-                    break;
-                case 'sembako':
-                    include __DIR__ . '/pages/sembako.php';
-                    break;
-                case 'pesanan-masuk':
-                    include __DIR__ . '/pages/pesanan_masuk.php';
-                    break;
-                case 'proses-pengiriman':
-                    include __DIR__ . '/pages/proses_pengiriman.php';
-                    break;
-                case 'semua-transaksi':
-                    include __DIR__ . '/pages/semua_transaksi.php';
-                    break;
-                case 'beranda':
-                default:
-                    include __DIR__ . '/pages/beranda.php';
-                    break;
-            }
-            ?>
-        </main>
-    </div>
+    <main class="user-main" id="user-main-content">
+        <?php
+        switch ($page) {
+            case 'rempah':
+                include __DIR__ . '/pages/rempah.php';
+                break;
+            case 'camilan':
+                include __DIR__ . '/pages/camilan.php';
+                break;
+            case 'keranjang':
+                include __DIR__ . '/pages/keranjang.php';
+                break;
+            case 'pembayaran':
+                include __DIR__ . '/pages/pembayaran.php';
+                break;
+            case 'riwayat':
+                include __DIR__ . '/pages/riwayat.php';
+                break;
+            case 'tentang':
+                include __DIR__ . '/pages/tentang.php';
+                break;
+            case 'promo':
+                include __DIR__ . '/pages/promo.php';
+                break;
+            case 'panduan':
+                include __DIR__ . '/pages/panduan.php';
+                break;
+            case 'kontak':
+                include __DIR__ . '/pages/kontak.php';
+                break;
+            case 'sembako':
+                include __DIR__ . '/pages/sembako.php';
+                break;
+            case 'perawatan':
+                include __DIR__ . '/pages/perawatan.php';
+                break;
+            case 'kesehatan':
+                include __DIR__ . '/pages/kesehatan.php';
+                break;
+            case 'minuman':
+                include __DIR__ . '/pages/minuman.php';
+                break;
+            case 'pencarian':
+                include __DIR__ . '/pages/pencarian.php';
+                break;
+            case 'beranda':
+            default:
+                include __DIR__ . '/pages/beranda.php';
+                break;
+        }
+        ?>
+    </main>
 
     <!-- ═══════════════════════════════════════════════════════
          FOOTER
          ═══════════════════════════════════════════════════════ -->
-    <?php if (in_array($page, ['beranda', 'sembako', 'rempah', 'camilan', 'keranjang', 'pembayaran', 'riwayat'])): ?>
-    <footer class="footer" id="footer">
-        <span>&copy; 2026 Warung Tiga Saudara. All rights reserved.</span>
-        <div class="footer__links">
-            <a href="#" class="footer__link" id="link-hubungi">Hubungi Kami</a>
-            <a href="#" class="footer__link" id="link-privasi">Kebijakan Privasi</a>
-            <a href="#" class="footer__link" id="link-syarat">Syarat Layanan</a>
+    <footer class="user-footer" id="user-footer">
+        <div class="user-footer__inner">
+            <span>&copy; 2026 Warung Tiga Saudara. All rights reserved.</span>
+            <div class="user-footer__links">
+                <a href="index.php?page=kontak" class="user-footer__link" id="link-hubungi">Hubungi Kami</a>
+                <a href="#" class="user-footer__link" id="link-privasi">Kebijakan Privasi</a>
+                <a href="#" class="user-footer__link" id="link-syarat">Syarat Layanan</a>
+            </div>
         </div>
     </footer>
-    <?php endif; ?>
 
 </div>
 
@@ -274,7 +186,6 @@ $userStatus   = $isLoggedIn
     <?= htmlspecialchars($cartMessage) ?>
 </div>
 <script>
-    // Auto-remove toast after animation completes
     setTimeout(function() {
         var toast = document.getElementById('cart-toast');
         if (toast) toast.remove();
@@ -283,10 +194,8 @@ $userStatus   = $isLoggedIn
 <?php endif; ?>
 
 <!-- ═══════════════════════════════════════════════════════════
-     MODALS & DRAWERS (Login, Notifications, Settings)
+     MODALS & DRAWERS (Notifications, Settings)
      ═══════════════════════════════════════════════════════════ -->
-
-<!-- Login now handled by login.php (RBAC server-side auth) -->
 
 <!-- Notification Drawer -->
 <div class="custom-modal" id="notifDrawer">
@@ -304,7 +213,6 @@ $userStatus   = $isLoggedIn
         </div>
         <div class="custom-drawer__body">
             <div class="notif-list">
-                <!-- Notif Item 1 -->
                 <div class="notif-item notif-item--unread">
                     <div class="notif-item__icon-wrapper notif-item__icon-wrapper--promo">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -317,7 +225,6 @@ $userStatus   = $isLoggedIn
                         <span class="notif-item__time">5 menit yang lalu</span>
                     </div>
                 </div>
-                <!-- Notif Item 2 -->
                 <div class="notif-item notif-item--unread">
                     <div class="notif-item__icon-wrapper notif-item__icon-wrapper--order">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -330,7 +237,6 @@ $userStatus   = $isLoggedIn
                         <span class="notif-item__time">1 jam yang lalu</span>
                     </div>
                 </div>
-                <!-- Notif Item 3 -->
                 <div class="notif-item notif-item--unread">
                     <div class="notif-item__icon-wrapper notif-item__icon-wrapper--stock">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -359,7 +265,7 @@ $userStatus   = $isLoggedIn
             <div class="custom-drawer__title-group">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="custom-drawer__title-icon">
                     <circle cx="12" cy="12" r="3"/>
-                    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 012.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+                    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
                 </svg>
                 <h3 class="custom-drawer__title">Pengaturan</h3>
             </div>
@@ -367,7 +273,6 @@ $userStatus   = $isLoggedIn
         </div>
         <div class="custom-drawer__body">
             <div class="settings-list">
-                <!-- Theme Option -->
                 <div class="settings-item">
                     <div class="settings-item__info">
                         <h4 class="settings-item__title">Mode Gelap (Dark Mode)</h4>
@@ -378,7 +283,6 @@ $userStatus   = $isLoggedIn
                         <span class="slider round"></span>
                     </label>
                 </div>
-                <!-- Notif Toggle -->
                 <div class="settings-item">
                     <div class="settings-item__info">
                         <h4 class="settings-item__title">Terima Notifikasi</h4>
@@ -389,7 +293,6 @@ $userStatus   = $isLoggedIn
                         <span class="slider round"></span>
                     </label>
                 </div>
-                <!-- Language Option -->
                 <div class="settings-item settings-item--vertical">
                     <div class="settings-item__info">
                         <h4 class="settings-item__title">Bahasa Aplikasi</h4>
@@ -405,132 +308,98 @@ $userStatus   = $isLoggedIn
             </div>
         </div>
         <div class="custom-drawer__footer">
-            <p class="settings-version">Warung Tiga Saudara v1.0.0</p>
+            <p class="settings-version">Warung Tiga Saudara v2.0.0</p>
         </div>
     </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // DOM Elements
-    const userAvatar = document.getElementById('user-avatar');
-    const profileDropdown = document.getElementById('profileDropdown');
-    
-    const btnNotifications = document.getElementById('btn-notifications');
-    const menuNotifBtn = document.getElementById('menu-notif-btn');
-    const notifDrawer = document.getElementById('notifDrawer');
-    const notifBackdrop = document.getElementById('notifBackdrop');
-    const closeNotifBtn = document.getElementById('closeNotifBtn');
-    const clearNotifBtn = document.getElementById('clearNotifBtn');
-    
-    const btnSettings = document.getElementById('btn-settings');
-    const menuSettingsBtn = document.getElementById('menu-settings-btn');
-    const settingsDrawer = document.getElementById('settingsDrawer');
-    const settingsBackdrop = document.getElementById('settingsBackdrop');
-    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
-    
-    // Settings elements
-    const darkModeToggle = document.getElementById('darkModeToggle');
-    
-    // --- Helper to show Toast ---
+    // ── DOM Elements ────────────────────────────────────────
+    var notifDrawer      = document.getElementById('notifDrawer');
+    var notifBackdrop    = document.getElementById('notifBackdrop');
+    var closeNotifBtn    = document.getElementById('closeNotifBtn');
+    var clearNotifBtn    = document.getElementById('clearNotifBtn');
+    var settingsDrawer   = document.getElementById('settingsDrawer');
+    var settingsBackdrop = document.getElementById('settingsBackdrop');
+    var closeSettingsBtn = document.getElementById('closeSettingsBtn');
+    var darkModeToggle   = document.getElementById('darkModeToggle');
+
+    // Header action buttons
+    var userNotifBtn     = document.getElementById('user-notif-btn');
+    var udmNotifikasi    = document.getElementById('udm-notifikasi');
+    var udmPengaturan    = document.getElementById('udm-pengaturan');
+
+    // ── Toast Helper ────────────────────────────────────────
     function showCustomToast(message) {
-        const existing = document.getElementById('custom-js-toast');
+        var existing = document.getElementById('custom-js-toast');
         if (existing) existing.remove();
-        
-        const toast = document.createElement('div');
+        var toast = document.createElement('div');
         toast.className = 'toast';
         toast.id = 'custom-js-toast';
-        toast.style.top = '80px';
-        toast.innerHTML = `
-            <svg class="toast__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-            </svg>
-            <span>${message}</span>
-        `;
+        toast.innerHTML = '<svg class="toast__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>' + message + '</span>';
         document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            if (toast) toast.remove();
-        }, 3200);
+        setTimeout(function() { if (toast) toast.remove(); }, 3200);
     }
-    
-    // --- Dark Mode Handler ---
-    const isDarkMode = localStorage.getItem('darkMode') === 'true';
+
+    // ── Dark Mode ───────────────────────────────────────────
+    var isDarkMode = localStorage.getItem('darkMode') === 'true';
     if (isDarkMode) {
         document.body.classList.add('dark-theme');
-        darkModeToggle.checked = true;
+        if (darkModeToggle) darkModeToggle.checked = true;
     }
-    
-    darkModeToggle.addEventListener('change', function() {
-        if (this.checked) {
-            document.body.classList.add('dark-theme');
-            localStorage.setItem('darkMode', 'true');
-            showCustomToast('Mode Gelap diaktifkan.');
-        } else {
-            document.body.classList.remove('dark-theme');
-            localStorage.setItem('darkMode', 'false');
-            showCustomToast('Mode Terang diaktifkan.');
-        }
-    });
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                document.body.classList.add('dark-theme');
+                localStorage.setItem('darkMode', 'true');
+                showCustomToast('Mode Gelap diaktifkan.');
+            } else {
+                document.body.classList.remove('dark-theme');
+                localStorage.setItem('darkMode', 'false');
+                showCustomToast('Mode Terang diaktifkan.');
+            }
+        });
+    }
 
-    // --- Toggle Profile Dropdown ---
-    userAvatar.addEventListener('click', function(e) {
-        e.stopPropagation();
-        profileDropdown.classList.toggle('profile-dropdown--show');
-    });
-    
-    document.addEventListener('click', function() {
-        profileDropdown.classList.remove('profile-dropdown--show');
-    });
-    
-    profileDropdown.addEventListener('click', function(e) {
-        e.stopPropagation();
-    });
-
-    // --- Modal Open/Close Helpers ---
+    // ── Modal Open/Close Helpers ────────────────────────────
     function openModal(modalEl) {
-        profileDropdown.classList.remove('profile-dropdown--show');
-        modalEl.classList.add('custom-modal--show');
-        document.body.style.overflow = 'hidden';
+        if (modalEl) {
+            modalEl.classList.add('custom-modal--show');
+            document.body.style.overflow = 'hidden';
+        }
     }
-    
     function closeModal(modalEl) {
-        modalEl.classList.remove('custom-modal--show');
-        if (!document.querySelector('.custom-modal--show')) {
-            document.body.style.overflow = '';
+        if (modalEl) {
+            modalEl.classList.remove('custom-modal--show');
+            if (!document.querySelector('.custom-modal--show')) {
+                document.body.style.overflow = '';
+            }
         }
     }
 
-    // --- Notification Actions ---
-    function openNotifDrawer() {
-        openModal(notifDrawer);
-    }
-    btnNotifications.addEventListener('click', openNotifDrawer);
-    menuNotifBtn.addEventListener('click', openNotifDrawer);
-    
-    closeNotifBtn.addEventListener('click', () => closeModal(notifDrawer));
-    notifBackdrop.addEventListener('click', () => closeModal(notifDrawer));
-    
-    clearNotifBtn.addEventListener('click', function() {
-        const unreadItems = document.querySelectorAll('.notif-item--unread');
-        unreadItems.forEach(item => item.classList.remove('notif-item--unread'));
-        
-        document.getElementById('dropdown-notif-badge').style.display = 'none';
-        document.getElementById('navbar-notif-badge').style.display = 'none';
-        
-        showCustomToast('Semua notifikasi ditandai dibaca.');
-    });
+    // ── Notification Drawer ─────────────────────────────────
+    if (userNotifBtn)  userNotifBtn.addEventListener('click', function() { openModal(notifDrawer); });
+    if (udmNotifikasi) udmNotifikasi.addEventListener('click', function() { openModal(notifDrawer); });
+    if (closeNotifBtn) closeNotifBtn.addEventListener('click', function() { closeModal(notifDrawer); });
+    if (notifBackdrop) notifBackdrop.addEventListener('click', function() { closeModal(notifDrawer); });
 
-    // --- Settings Actions ---
-    function openSettingsDrawer() {
-        openModal(settingsDrawer);
+    if (clearNotifBtn) {
+        clearNotifBtn.addEventListener('click', function() {
+            var unreadItems = document.querySelectorAll('.notif-item--unread');
+            unreadItems.forEach(function(item) { item.classList.remove('notif-item--unread'); });
+            var notifBadge = document.getElementById('user-notif-badge');
+            if (notifBadge) notifBadge.style.display = 'none';
+            var dropdownBadge = document.querySelector('.user-dropdown__badge-inline');
+            if (dropdownBadge) dropdownBadge.style.display = 'none';
+            showCustomToast('Semua notifikasi ditandai dibaca.');
+        });
     }
-    btnSettings.addEventListener('click', openSettingsDrawer);
-    menuSettingsBtn.addEventListener('click', openSettingsDrawer);
-    
-    closeSettingsBtn.addEventListener('click', () => closeModal(settingsDrawer));
-    settingsBackdrop.addEventListener('click', () => closeModal(settingsDrawer));
+
+    // ── Settings Drawer ─────────────────────────────────────
+    if (udmPengaturan)    udmPengaturan.addEventListener('click', function() { openModal(settingsDrawer); });
+    if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', function() { closeModal(settingsDrawer); });
+    if (settingsBackdrop) settingsBackdrop.addEventListener('click', function() { closeModal(settingsDrawer); });
 });
 </script>
 </body>

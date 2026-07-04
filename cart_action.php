@@ -12,6 +12,16 @@
 
 session_start();
 
+// ── Auth Guard ────────────────────────────────────────────
+// Semua aksi keranjang membutuhkan login.
+// Jika belum login, simpan pesan & arahkan ke halaman login.
+if (!isset($_SESSION['user_id'])) {
+    $_SESSION['login_required_message'] = 'Silakan login terlebih dahulu untuk menambahkan produk ke keranjang.';
+    header('Location: login.php');
+    exit;
+}
+// ─────────────────────────────────────────────────────────
+
 // Initialize cart as associative array [product_id => quantity]
 if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
@@ -71,7 +81,21 @@ elseif ($action === 'seed_demo') {
 // Build redirection URL
 $redirectUrl = 'index.php';
 if ($redirectPage !== '') {
-    $redirectUrl .= '?page=' . urlencode($redirectPage);
+    $parts = explode('&', $redirectPage);
+    $params = [];
+    foreach ($parts as $idx => $part) {
+        $keyValue = explode('=', $part, 2);
+        if (count($keyValue) === 2) {
+            $params[] = urlencode($keyValue[0]) . '=' . urlencode($keyValue[1]);
+        } else {
+            if ($idx === 0) {
+                $params[] = 'page=' . urlencode($keyValue[0]);
+            } else {
+                $params[] = urlencode($keyValue[0]);
+            }
+        }
+    }
+    $redirectUrl .= '?' . implode('&', $params);
 }
 
 header('Location: ' . $redirectUrl);
