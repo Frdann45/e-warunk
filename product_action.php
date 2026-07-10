@@ -23,13 +23,59 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
 // ── Only handle POST ──────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: index.php');
+    header('Location: admin.php');
     exit;
 }
 
 $action      = trim($_POST['action'] ?? '');
 $flashMsg    = '';
 $flashType   = 'success';
+
+// ──────────────────────────────────────────────────────────────
+// IMAGE UPLOAD HELPER (shared by add + update)
+// ──────────────────────────────────────────────────────────────
+/**
+ * Handles the image_file upload field.
+ * Returns the saved relative path (images/uploads/xxx.jpg) on success,
+ * or null if no file was uploaded, or throws on error.
+ *
+ * @throws RuntimeException on invalid file / save failure
+ */
+function handleImageUpload(): ?string
+{
+    if (empty($_FILES['image_file']['name'])) return null;
+
+    $file    = $_FILES['image_file'];
+    $allowed = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
+    $maxSize = 2 * 1024 * 1024; // 2 MB
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        throw new RuntimeException('Upload gagal (kode error: ' . $file['error'] . ').');
+    }
+    // Validate MIME type using finfo (more reliable than $_FILES['type'])
+    $finfo    = finfo_open(FILEINFO_MIME_TYPE);
+    $mimeType = finfo_file($finfo, $file['tmp_name']);
+    finfo_close($finfo);
+
+    if (!array_key_exists($mimeType, $allowed)) {
+        throw new RuntimeException('Format file tidak didukung. Gunakan PNG, JPG, atau WEBP.');
+    }
+    if ($file['size'] > $maxSize) {
+        throw new RuntimeException('Ukuran file terlalu besar. Maksimal 2 MB.');
+    }
+
+    $ext      = $allowed[$mimeType];
+    $filename = uniqid('prod_', true) . '.' . $ext;
+    $destDir  = __DIR__ . '/images/uploads/';
+    if (!is_dir($destDir)) mkdir($destDir, 0755, true);
+    $destPath = $destDir . $filename;
+
+    if (!move_uploaded_file($file['tmp_name'], $destPath)) {
+        throw new RuntimeException('Gagal menyimpan file ke server.');
+    }
+
+    return 'images/uploads/' . $filename;
+}
 
 // ══════════════════════════════════════════════════════════════
 // PRODUCT CRUD ACTIONS
@@ -42,7 +88,17 @@ if ($action === 'add') {
     $unit_desc = trim($_POST['unit_desc'] ?? '');
     $price     = (float) ($_POST['price'] ?? 0);
     $badge     = trim($_POST['badge_label'] ?? '') ?: null;
-    $image_url = trim($_POST['image_url'] ?? '') ?: 'images/logo.png';
+
+    // Determine image: uploaded file takes priority over typed path
+    try {
+        $uploadedPath = handleImageUpload();
+    } catch (RuntimeException $e) {
+        $_SESSION['prod_flash']      = $e->getMessage();
+        $_SESSION['prod_flash_type'] = 'error';
+        header('Location: admin.php?page=tambah-produk');
+        exit;
+    }
+    $image_url = $uploadedPath ?? (trim($_POST['image_url'] ?? '') ?: 'images/logo.png');
 
     if ($name && $category && $unit_desc && $price > 0) {
         try {
@@ -63,7 +119,7 @@ if ($action === 'add') {
 
     $_SESSION['prod_flash']      = $flashMsg;
     $_SESSION['prod_flash_type'] = $flashType;
-    header('Location: index.php?page=tambah-produk');
+    header('Location: admin.php?page=tambah-produk');
     exit;
 }
 
@@ -75,7 +131,28 @@ elseif ($action === 'update') {
     $unit_desc = trim($_POST['unit_desc'] ?? '');
     $price     = (float) ($_POST['price'] ?? 0);
     $badge     = trim($_POST['badge_label'] ?? '') ?: null;
-    $image_url = trim($_POST['image_url'] ?? '') ?: 'images/logo.png';
+
+    // Determine image: uploaded file > typed path > keep existing
+    try {
+        $uploadedPath = handleImageUpload();
+    } catch (RuntimeException $e) {
+        $_SESSION['prod_flash']      = $e->getMessage();
+        $_SESSION['prod_flash_type'] = 'error';
+        header('Location: admin.php?page=tambah-produk&edit=' . $id);
+        exit;
+    }
+
+    $typedPath = trim($_POST['image_url'] ?? '');
+    if ($uploadedPath) {
+        $image_url = $uploadedPath;
+    } elseif ($typedPath) {
+        $image_url = $typedPath;
+    } else {
+        // Fetch existing image to avoid clearing it accidentally
+        $stmtImg = $pdo->prepare("SELECT image_url FROM products WHERE id=?");
+        $stmtImg->execute([$id]);
+        $image_url = $stmtImg->fetchColumn() ?: 'images/logo.png';
+    }
 
     if ($id > 0 && $name && $category && $unit_desc && $price > 0) {
         try {
@@ -97,7 +174,7 @@ elseif ($action === 'update') {
 
     $_SESSION['prod_flash']      = $flashMsg;
     $_SESSION['prod_flash_type'] = $flashType;
-    header('Location: index.php?page=tambah-produk');
+    header('Location: admin.php?page=tambah-produk');
     exit;
 }
 
@@ -121,7 +198,7 @@ elseif ($action === 'delete') {
 
     $_SESSION['prod_flash']      = $flashMsg;
     $_SESSION['prod_flash_type'] = $flashType;
-    header('Location: index.php?page=tambah-produk');
+    header('Location: admin.php?page=tambah-produk');
     exit;
 }
 
@@ -155,7 +232,7 @@ elseif ($action === 'set_badge') {
 
     $_SESSION['promo_flash']      = $flashMsg;
     $_SESSION['promo_flash_type'] = $flashType;
-    header('Location: index.php?page=buat-promo');
+    header('Location: admin.php?page=buat-promo');
     exit;
 }
 
@@ -179,7 +256,7 @@ elseif ($action === 'remove_badge') {
 
     $_SESSION['promo_flash']      = $flashMsg;
     $_SESSION['promo_flash_type'] = $flashType;
-    header('Location: index.php?page=buat-promo');
+    header('Location: admin.php?page=buat-promo');
     exit;
 }
 
@@ -196,7 +273,7 @@ elseif ($action === 'clear_all_badges') {
 
     $_SESSION['promo_flash']      = $flashMsg;
     $_SESSION['promo_flash_type'] = $flashType;
-    header('Location: index.php?page=buat-promo');
+    header('Location: admin.php?page=buat-promo');
     exit;
 }
 

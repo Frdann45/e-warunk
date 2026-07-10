@@ -11,7 +11,7 @@
  */
 
 // Xendit Secret API Key for the Sandbox environment
-define('XENDIT_SECRET_KEY', 'xnd_development_Xlm7i77wf9XGjD220TPmhmVjAAvg4ixrmw46eWLcWk12XeOU2ZMHWKimvvzylW');
+define('XENDIT_SECRET_KEY', 'xnd_development_UNwH8eXrihX6n6boDpKst2IFI8Qrn4QCMil1MIvJWrPN6ezHkWtNSh44QRCRiB5');
 
 // Verification Token set in the Xendit Dashboard to validate incoming webhook callbacks
 define('XENDIT_WEBHOOK_TOKEN', 'GIO6YWfqbJccb5CimaJkafMTCgvIQLtGY1WcAf2MwiOZW3sK');

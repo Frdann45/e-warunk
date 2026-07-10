@@ -42,14 +42,6 @@ $headerCartCount = isset($cartCount) ? (int) $cartCount : 0;
             <span class="user-header__brand-text">e-warung</span>
         </a>
 
-        <!-- ── Navigation Links (Restored) ───────────────────── -->
-        <nav class="user-header__nav" id="user-nav-links">
-            <a href="index.php?page=beranda" class="user-header__nav-link <?= $page === 'beranda' ? 'user-header__nav-link--active' : '' ?>" id="nav-beranda">Beranda</a>
-            <a href="index.php?page=tentang" class="user-header__nav-link <?= $page === 'tentang' ? 'user-header__nav-link--active' : '' ?>" id="nav-tentang">Tentang Kami</a>
-            <a href="index.php?page=promo" class="user-header__nav-link <?= $page === 'promo' ? 'user-header__nav-link--active' : '' ?>" id="nav-promo">Promo Bulanan</a>
-            <a href="index.php?page=panduan" class="user-header__nav-link <?= $page === 'panduan' ? 'user-header__nav-link--active' : '' ?>" id="nav-panduan">Panduan Belanja</a>
-            <a href="index.php?page=kontak" class="user-header__nav-link <?= $page === 'kontak' ? 'user-header__nav-link--active' : '' ?>" id="nav-kontak">Kontak</a>
-        </nav>
 
         <!-- ── Global Search Bar ─────────────────────────────── -->
         <div class="user-header__search-wrapper">
@@ -123,11 +115,11 @@ $headerCartCount = isset($cartCount) ? (int) $cartCount : 0;
                             </a>
                         </li>
                         <li class="user-dropdown__mobile-only">
-                            <a href="index.php?page=tentang" class="user-dropdown__item" id="udm-m-tentang">
+                            <a href="index.php?page=panduan" class="user-dropdown__item" id="udm-m-panduan">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="user-dropdown__icon">
-                                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+                                    <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>
                                 </svg>
-                                <span>Tentang Kami</span>
+                                <span>Panduan Belanja</span>
                             </a>
                         </li>
                         <li class="user-dropdown__mobile-only">
@@ -139,11 +131,11 @@ $headerCartCount = isset($cartCount) ? (int) $cartCount : 0;
                             </a>
                         </li>
                         <li class="user-dropdown__mobile-only">
-                            <a href="index.php?page=panduan" class="user-dropdown__item" id="udm-m-panduan">
+                            <a href="index.php?page=tentang" class="user-dropdown__item" id="udm-m-tentang">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="user-dropdown__icon">
-                                    <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>
+                                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
                                 </svg>
-                                <span>Panduan Belanja</span>
+                                <span>Tentang Kami</span>
                             </a>
                         </li>
                         <li class="user-dropdown__mobile-only">

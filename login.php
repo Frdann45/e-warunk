@@ -25,8 +25,11 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
 // ── Database Connection ─────────────────────────────────────
 require_once __DIR__ . '/db_connect.php';
 
-// ── Handle Login POST ───────────────────────────────────────
-$errorMessage = '';
+// ── Handle Login & Register POST ────────────────────────────
+$errorMessage    = '';
+$registerError   = '';
+$registerSuccess = '';
+$activeTab       = 'login'; // 'login' or 'register'
 
 // ── Read cart redirect flash message ────────────────────────
 $loginRequiredMessage = '';
@@ -35,38 +38,102 @@ if (isset($_SESSION['login_required_message'])) {
     unset($_SESSION['login_required_message']);
 }
 
+// ── Read register success flash ──────────────────────────────
+if (isset($_SESSION['register_success'])) {
+    $registerSuccess = $_SESSION['register_success'];
+    unset($_SESSION['register_success']);
+    $activeTab = 'login';
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email    = isset($_POST['email'])    ? trim($_POST['email'])    : '';
-    $password = isset($_POST['password']) ? trim($_POST['password']) : '';
 
-    if ($email === '' || $password === '') {
-        $errorMessage = 'Mohon lengkapi semua field.';
-    } else {
-        try {
-            $stmt = $pdo->prepare('SELECT id, name, email, password, role FROM users WHERE email = :email LIMIT 1');
-            $stmt->execute([':email' => $email]);
-            $user = $stmt->fetch();
+    // ════════════════════════════════════════
+    // HANDLE LOGIN
+    // ════════════════════════════════════════
+    if (isset($_POST['action']) && $_POST['action'] === 'login') {
+        $activeTab = 'login';
+        $email    = isset($_POST['email'])    ? trim($_POST['email'])    : '';
+        $password = isset($_POST['password']) ? trim($_POST['password']) : '';
 
-            if ($user && password_verify($password, $user['password'])) {
-                // ── Set Session Variables ────────────────────
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['name']    = $user['name'];
-                $_SESSION['email']   = $user['email'];
-                $_SESSION['role']    = $user['role'];
+        if ($email === '' || $password === '') {
+            $errorMessage = 'Mohon lengkapi semua field.';
+        } else {
+            try {
+                $stmt = $pdo->prepare('SELECT id, name, email, password, role FROM users WHERE email = :email LIMIT 1');
+                $stmt->execute([':email' => $email]);
+                $user = $stmt->fetch();
 
-                // ── RBAC Redirect: Admin → admin.php, User → index.php
-                if ($user['role'] === 'admin') {
-                    header('Location: admin.php');
+                if ($user && password_verify($password, $user['password'])) {
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['name']    = $user['name'];
+                    $_SESSION['email']   = $user['email'];
+                    $_SESSION['role']    = $user['role'];
+
+                    if ($user['role'] === 'admin') {
+                        header('Location: admin.php');
+                    } else {
+                        header('Location: index.php');
+                    }
+                    exit;
                 } else {
-                    header('Location: index.php');
+                    $errorMessage = 'Email atau password salah. Silakan coba lagi.';
                 }
-                exit;
-            } else {
-                $errorMessage = 'Email atau password salah. Silakan coba lagi.';
+            } catch (PDOException $e) {
+                error_log('Login Error: ' . $e->getMessage());
+                $errorMessage = 'Terjadi kesalahan sistem. Silakan coba lagi nanti.';
             }
-        } catch (PDOException $e) {
-            error_log('Login Error: ' . $e->getMessage());
-            $errorMessage = 'Terjadi kesalahan sistem. Silakan coba lagi nanti.';
+        }
+    }
+
+    // ════════════════════════════════════════
+    // HANDLE REGISTER
+    // ════════════════════════════════════════
+    elseif (isset($_POST['action']) && $_POST['action'] === 'register') {
+        $activeTab   = 'register';
+        $regName     = isset($_POST['reg_name'])     ? trim($_POST['reg_name'])     : '';
+        $regEmail    = isset($_POST['reg_email'])    ? trim($_POST['reg_email'])    : '';
+        $regPassword = isset($_POST['reg_password']) ? $_POST['reg_password']       : '';
+        $regConfirm  = isset($_POST['reg_confirm'])  ? $_POST['reg_confirm']        : '';
+
+        // Validate
+        if ($regName === '' || $regEmail === '' || $regPassword === '' || $regConfirm === '') {
+            $registerError = 'Mohon lengkapi semua field pendaftaran.';
+        } elseif (!filter_var($regEmail, FILTER_VALIDATE_EMAIL)) {
+            $registerError = 'Format email tidak valid.';
+        } elseif (strlen($regPassword) < 6) {
+            $registerError = 'Password minimal 6 karakter.';
+        } elseif ($regPassword !== $regConfirm) {
+            $registerError = 'Konfirmasi password tidak cocok.';
+        } else {
+            try {
+                // Check if email already registered
+                $check = $pdo->prepare('SELECT id FROM users WHERE email = :email LIMIT 1');
+                $check->execute([':email' => $regEmail]);
+
+                if ($check->fetch()) {
+                    $registerError = 'Email ini sudah terdaftar. Silakan gunakan email lain atau masuk.';
+                } else {
+                    // Insert new user
+                    $hashedPassword = password_hash($regPassword, PASSWORD_BCRYPT);
+                    $insert = $pdo->prepare(
+                        'INSERT INTO users (name, email, password, role) VALUES (:name, :email, :password, :role)'
+                    );
+                    $insert->execute([
+                        ':name'     => $regName,
+                        ':email'    => $regEmail,
+                        ':password' => $hashedPassword,
+                        ':role'     => 'user',
+                    ]);
+
+                    // Success — redirect back to login tab with flash
+                    $_SESSION['register_success'] = 'Akun berhasil dibuat! Silakan masuk dengan email dan password Anda.';
+                    header('Location: login.php');
+                    exit;
+                }
+            } catch (PDOException $e) {
+                error_log('Register Error: ' . $e->getMessage());
+                $registerError = 'Terjadi kesalahan sistem. Silakan coba lagi nanti.';
+            }
         }
     }
 }
@@ -505,7 +572,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             text-align: center;
             font-size: 0.78rem;
             color: var(--text-light);
-            margin-top: 28px;
+            margin-top: 22px;
         }
 
         .login-footer a {
@@ -516,6 +583,102 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .login-footer a:hover {
             text-decoration: underline;
+        }
+
+        /* ── Tab Toggle ───────────────────────────────────── */
+        .auth-tabs {
+            display: flex;
+            background: #F0EBE4;
+            border-radius: var(--radius-md);
+            padding: 4px;
+            margin-bottom: 28px;
+            gap: 4px;
+        }
+
+        .auth-tab-btn {
+            flex: 1;
+            padding: 9px 10px;
+            border: none;
+            background: transparent;
+            border-radius: calc(var(--radius-md) - 2px);
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.22s ease;
+        }
+
+        .auth-tab-btn.auth-tab-btn--active {
+            background: var(--bg-card);
+            color: var(--primary-dark);
+            box-shadow: 0 2px 8px rgba(109, 58, 26, 0.12);
+        }
+
+        /* ── Panel Sections (login/register) ──────────────── */
+        .auth-panel {
+            display: none;
+            animation: panelFadeIn 0.28s ease;
+        }
+        .auth-panel.auth-panel--active {
+            display: block;
+        }
+
+        @keyframes panelFadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Success Alert ────────────────────────────────── */
+        .login-success {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: rgba(22, 163, 74, 0.07);
+            border: 1px solid rgba(22, 163, 74, 0.3);
+            border-radius: var(--radius-md);
+            color: #15803d;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            animation: fadeInInfo 0.4s ease;
+        }
+        .login-success svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+        /* ── Register error same style as login-alert ─────── */
+        .register-alert {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: rgba(184, 56, 44, 0.06);
+            border: 1px solid rgba(184, 56, 44, 0.25);
+            border-radius: var(--radius-md);
+            color: var(--accent-red);
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            animation: shakeX 0.4s ease;
+        }
+        .register-alert svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+        /* ── Divider ──────────────────────────────────────── */
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 18px 0;
+            color: var(--text-light);
+            font-size: 0.72rem;
+            letter-spacing: 0.05em;
+        }
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
         }
 
         /* ── Credentials Hint (dev only) ──────────────────── */
@@ -631,109 +794,326 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- ═══════════════════════════════════════════════════════
          RIGHT PANEL: Login Form
          ═══════════════════════════════════════════════════════ -->
-    <div class="login-form-panel">
+    <div class="login-form-panel" id="login-form-panel">
+
+        <!-- ══ Page Title ══════════════════════════════════ -->
         <div class="login-form-panel__header">
-            <h2 class="login-form-panel__title">Masuk ke Akun Anda</h2>
-            <p class="login-form-panel__desc">Silakan masukkan email dan password yang terdaftar.</p>
+            <h2 class="login-form-panel__title" id="auth-panel-title">Akun E-WARUNG</h2>
+            <p class="login-form-panel__desc">Masuk atau buat akun baru untuk mulai berbelanja.</p>
         </div>
 
-        <?php if ($loginRequiredMessage !== ''): ?>
-            <div class="login-info">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="login-info__icon">
-                    <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-                    <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
-                </svg>
-                <?= htmlspecialchars($loginRequiredMessage) ?>
-            </div>
-        <?php endif; ?>
-
-        <?php if ($errorMessage !== ''): ?>
-            <div class="login-alert">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="login-alert__icon">
-                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
-                <?= htmlspecialchars($errorMessage) ?>
-            </div>
-        <?php endif; ?>
-
-        <form method="POST" action="login.php" class="login-form" id="loginPageForm">
-
-            <!-- Email -->
-            <div class="login-field">
-                <label class="login-field__label" for="login-email-field">ALAMAT EMAIL</label>
-                <div class="login-field__input-wrapper">
-                    <input
-                        type="email"
-                        id="login-email-field"
-                        name="email"
-                        class="login-field__input"
-                        placeholder="nama@email.com"
-                        value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '' ?>"
-                        required
-                        autocomplete="email"
-                    >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="login-field__icon">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                        <polyline points="22,6 12,13 2,6"/>
-                    </svg>
-                </div>
-            </div>
-
-            <!-- Password -->
-            <div class="login-field">
-                <label class="login-field__label" for="login-password-field">PASSWORD</label>
-                <div class="login-field__input-wrapper">
-                    <input
-                        type="password"
-                        id="login-password-field"
-                        name="password"
-                        class="login-field__input"
-                        placeholder="Masukkan password Anda"
-                        required
-                        autocomplete="current-password"
-                    >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="login-field__icon">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                        <path d="M7 11V7a5 5 0 0110 0v4"/>
-                    </svg>
-                    <button type="button" class="login-field__toggle-pw" id="togglePassword" title="Tampilkan password">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="eyeIcon">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                            <circle cx="12" cy="12" r="3"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Extras Row -->
-            <div class="login-extras">
-                <label class="login-extras__remember">
-                    <input type="checkbox" name="remember"> Ingat saya
-                </label>
-                <a href="#" class="login-extras__forgot">Lupa Password?</a>
-            </div>
-
-            <!-- Submit Button -->
-            <button type="submit" class="login-submit-btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="login-submit-btn__icon">
-                    <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M13.8 12H3"/>
-                </svg>
-                Masuk Sekarang
+        <!-- ══ Tab Toggle: Masuk / Daftar ══════════════════ -->
+        <div class="auth-tabs" id="auth-tabs" role="tablist">
+            <button type="button"
+                    class="auth-tab-btn <?= $activeTab === 'login' ? 'auth-tab-btn--active' : '' ?>"
+                    id="tab-btn-login"
+                    role="tab"
+                    aria-selected="<?= $activeTab === 'login' ? 'true' : 'false' ?>"
+                    aria-controls="panel-login"
+                    onclick="switchTab('login')">
+                Masuk
             </button>
-        </form>
+            <button type="button"
+                    class="auth-tab-btn <?= $activeTab === 'register' ? 'auth-tab-btn--active' : '' ?>"
+                    id="tab-btn-register"
+                    role="tab"
+                    aria-selected="<?= $activeTab === 'register' ? 'true' : 'false' ?>"
+                    aria-controls="panel-register"
+                    onclick="switchTab('register')">
+                Daftar
+            </button>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════
+             PANEL: MASUK (LOGIN)
+             ══════════════════════════════════════════════════ -->
+        <div class="auth-panel <?= $activeTab === 'login' ? 'auth-panel--active' : '' ?>"
+             id="panel-login" role="tabpanel" aria-labelledby="tab-btn-login">
+
+            <?php if ($registerSuccess !== ''): ?>
+                <div class="login-success" role="alert">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    <?= htmlspecialchars($registerSuccess) ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($loginRequiredMessage !== ''): ?>
+                <div class="login-info">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="login-info__icon">
+                        <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                    </svg>
+                    <?= htmlspecialchars($loginRequiredMessage) ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($errorMessage !== ''): ?>
+                <div class="login-alert" role="alert">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="login-alert__icon">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    <?= htmlspecialchars($errorMessage) ?>
+                </div>
+            <?php endif; ?>
+
+            <form method="POST" action="login.php" class="login-form" id="loginPageForm">
+                <input type="hidden" name="action" value="login">
+
+                <!-- Email -->
+                <div class="login-field">
+                    <label class="login-field__label" for="login-email-field">ALAMAT EMAIL</label>
+                    <div class="login-field__input-wrapper">
+                        <input
+                            type="email"
+                            id="login-email-field"
+                            name="email"
+                            class="login-field__input"
+                            placeholder="nama@email.com"
+                            value="<?= (isset($_POST['action']) && $_POST['action'] === 'login' && isset($_POST['email'])) ? htmlspecialchars($_POST['email']) : '' ?>"
+                            required
+                            autocomplete="email"
+                        >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="login-field__icon">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="login-field">
+                    <label class="login-field__label" for="login-password-field">PASSWORD</label>
+                    <div class="login-field__input-wrapper">
+                        <input
+                            type="password"
+                            id="login-password-field"
+                            name="password"
+                            class="login-field__input"
+                            placeholder="Masukkan password Anda"
+                            required
+                            autocomplete="current-password"
+                        >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="login-field__icon">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0110 0v4"/>
+                        </svg>
+                        <button type="button" class="login-field__toggle-pw" id="togglePassword" title="Tampilkan password">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="eyeIcon">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Extras Row -->
+                <div class="login-extras">
+                    <label class="login-extras__remember">
+                        <input type="checkbox" name="remember"> Ingat saya
+                    </label>
+                    <a href="#" class="login-extras__forgot">Lupa Password?</a>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="login-submit-btn" id="login-submit-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="login-submit-btn__icon">
+                        <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M13.8 12H3"/>
+                    </svg>
+                    Masuk Sekarang
+                </button>
+            </form>
+
+            <div class="auth-divider">ATAU</div>
+            <p style="text-align:center; font-size:.82rem; color:var(--text-secondary);">
+                Belum punya akun?
+                <a href="#" onclick="switchTab('register'); return false;"
+                   style="color:var(--primary); font-weight:700; text-decoration:none;">
+                   Daftar Sekarang
+                </a>
+            </p>
+
+        </div><!-- /panel-login -->
+
+        <!-- ══════════════════════════════════════════════════
+             PANEL: DAFTAR (REGISTER)
+             ══════════════════════════════════════════════════ -->
+        <div class="auth-panel <?= $activeTab === 'register' ? 'auth-panel--active' : '' ?>"
+             id="panel-register" role="tabpanel" aria-labelledby="tab-btn-register">
+
+            <?php if ($registerError !== ''): ?>
+                <div class="register-alert" role="alert">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    <?= htmlspecialchars($registerError) ?>
+                </div>
+            <?php endif; ?>
+
+            <form method="POST" action="login.php" class="login-form" id="registerForm">
+                <input type="hidden" name="action" value="register">
+
+                <!-- Nama Lengkap -->
+                <div class="login-field">
+                    <label class="login-field__label" for="reg-name-field">NAMA LENGKAP</label>
+                    <div class="login-field__input-wrapper">
+                        <input
+                            type="text"
+                            id="reg-name-field"
+                            name="reg_name"
+                            class="login-field__input"
+                            placeholder="Nama lengkap Anda"
+                            value="<?= (isset($_POST['action']) && $_POST['action'] === 'register' && isset($_POST['reg_name'])) ? htmlspecialchars($_POST['reg_name']) : '' ?>"
+                            required
+                            autocomplete="name"
+                        >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="login-field__icon">
+                            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="login-field">
+                    <label class="login-field__label" for="reg-email-field">ALAMAT EMAIL</label>
+                    <div class="login-field__input-wrapper">
+                        <input
+                            type="email"
+                            id="reg-email-field"
+                            name="reg_email"
+                            class="login-field__input"
+                            placeholder="nama@email.com"
+                            value="<?= (isset($_POST['action']) && $_POST['action'] === 'register' && isset($_POST['reg_email'])) ? htmlspecialchars($_POST['reg_email']) : '' ?>"
+                            required
+                            autocomplete="email"
+                        >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="login-field__icon">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="login-field">
+                    <label class="login-field__label" for="reg-password-field">PASSWORD <span style="font-size:.65rem; text-transform:none; letter-spacing:0; font-weight:400; color:var(--text-light);">(min. 6 karakter)</span></label>
+                    <div class="login-field__input-wrapper">
+                        <input
+                            type="password"
+                            id="reg-password-field"
+                            name="reg_password"
+                            class="login-field__input"
+                            placeholder="Buat password Anda"
+                            required
+                            autocomplete="new-password"
+                        >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="login-field__icon">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0110 0v4"/>
+                        </svg>
+                        <button type="button" class="login-field__toggle-pw" id="toggleRegPassword" title="Tampilkan password">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="eyeIconReg">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Konfirmasi Password -->
+                <div class="login-field">
+                    <label class="login-field__label" for="reg-confirm-field">KONFIRMASI PASSWORD</label>
+                    <div class="login-field__input-wrapper">
+                        <input
+                            type="password"
+                            id="reg-confirm-field"
+                            name="reg_confirm"
+                            class="login-field__input"
+                            placeholder="Ulangi password Anda"
+                            required
+                            autocomplete="new-password"
+                        >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="login-field__icon">
+                            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Terms note -->
+                <p style="font-size:.72rem; color:var(--text-light); line-height:1.5; margin-top:-4px;">
+                    Dengan mendaftar, Anda menyetujui
+                    <a href="#" style="color:var(--primary); font-weight:600;">Syarat &amp; Ketentuan</a>
+                    dan <a href="#" style="color:var(--primary); font-weight:600;">Kebijakan Privasi</a>
+                    Warung Tiga Saudara.
+                </p>
+
+                <!-- Submit -->
+                <button type="submit" class="login-submit-btn" id="register-submit-btn"
+                        style="background: linear-gradient(135deg, #B8382C, #8B2220);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="login-submit-btn__icon">
+                        <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <line x1="19" y1="8" x2="19" y2="14"/>
+                        <line x1="22" y1="11" x2="16" y2="11"/>
+                    </svg>
+                    Buat Akun Sekarang
+                </button>
+            </form>
+
+            <div class="auth-divider">ATAU</div>
+            <p style="text-align:center; font-size:.82rem; color:var(--text-secondary);">
+                Sudah punya akun?
+                <a href="#" onclick="switchTab('login'); return false;"
+                   style="color:var(--primary); font-weight:700; text-decoration:none;">
+                   Masuk di Sini
+                </a>
+            </p>
+
+        </div><!-- /panel-register -->
 
         <!-- Footer -->
-        <div class="login-footer">
+        <div class="login-footer" style="margin-top:20px;">
             &copy; 2026 Warung Tiga Saudara.
         </div>
     </div>
 
 </div>
 
-<!-- Toggle Password Visibility Script -->
+<!-- Auth Tab Switcher + Password Toggle Scripts -->
 <script>
-    document.getElementById('togglePassword').addEventListener('click', function() {
-        var pwd = document.getElementById('login-password-field');
+    /* ── Tab Switch ────────────────────────────────────────── */
+    function switchTab(tab) {
+        var panels  = document.querySelectorAll('.auth-panel');
+        var buttons = document.querySelectorAll('.auth-tab-btn');
+
+        panels.forEach(function (p) { p.classList.remove('auth-panel--active'); });
+        buttons.forEach(function (b) {
+            b.classList.remove('auth-tab-btn--active');
+            b.setAttribute('aria-selected', 'false');
+        });
+
+        var targetPanel = document.getElementById('panel-' + tab);
+        var targetBtn   = document.getElementById('tab-btn-' + tab);
+
+        if (targetPanel) targetPanel.classList.add('auth-panel--active');
+        if (targetBtn) {
+            targetBtn.classList.add('auth-tab-btn--active');
+            targetBtn.setAttribute('aria-selected', 'true');
+        }
+    }
+
+    /* ── Password Toggle — Login ───────────────────────────── */
+    document.getElementById('togglePassword').addEventListener('click', function () {
+        var pwd  = document.getElementById('login-password-field');
         var icon = document.getElementById('eyeIcon');
         if (pwd.type === 'password') {
             pwd.type = 'text';
@@ -743,6 +1123,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
         }
     });
+
+    /* ── Password Toggle — Register ────────────────────────── */
+    document.getElementById('toggleRegPassword').addEventListener('click', function () {
+        var pwd  = document.getElementById('reg-password-field');
+        var icon = document.getElementById('eyeIconReg');
+        if (pwd.type === 'password') {
+            pwd.type = 'text';
+            icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+        } else {
+            pwd.type = 'password';
+            icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+        }
+    });
+
+    /* ── Client-side password match check ─────────────────── */
+    (function () {
+        var form     = document.getElementById('registerForm');
+        var pwField  = document.getElementById('reg-password-field');
+        var cfmField = document.getElementById('reg-confirm-field');
+        if (!form) return;
+
+        cfmField.addEventListener('input', function () {
+            if (this.value && this.value !== pwField.value) {
+                this.style.borderColor = '#B8382C';
+            } else {
+                this.style.borderColor = '';
+            }
+        });
+
+        form.addEventListener('submit', function (e) {
+            if (pwField.value !== cfmField.value) {
+                e.preventDefault();
+                cfmField.style.borderColor = '#B8382C';
+                cfmField.focus();
+            }
+        });
+    }());
 </script>
 
 </body>

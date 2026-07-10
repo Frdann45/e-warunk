@@ -180,38 +180,42 @@ try {
         <?php if (!empty($featuredProducts)): ?>
             <?php foreach ($featuredProducts as $product): ?>
                 <div class="product-card fade-in" id="product-<?= htmlspecialchars($product['id']) ?>">
-                    <div class="product-card__image-wrapper">
-                        <img 
-                            src="<?= htmlspecialchars(getProductImage($product['name'])) ?>" 
-                            alt="<?= htmlspecialchars($product['name']) ?>" 
-                            class="product-card__image"
-                            loading="lazy"
-                        >
-                        <?php if (!empty($product['badge_label'])): ?>
-                            <span class="product-card__badge <?= $product['badge_label'] === 'PALING LARIS' 
-                                ? 'product-card__badge--laris' 
-                                : 'product-card__badge--promo' ?>">
-                                <?= htmlspecialchars($product['badge_label']) ?>
-                            </span>
-                        <?php endif; ?>
-                    </div>
-                    <div class="product-card__info">
-                        <h3 class="product-card__name"><?= htmlspecialchars($product['name']) ?></h3>
-                        <p class="product-card__unit"><?= htmlspecialchars($product['unit_desc']) ?></p>
-                        <div class="product-card__footer">
-                            <span class="product-card__price"><?= formatRupiah((float) $product['price']) ?></span>
-                            <form action="cart_action.php" method="POST" style="margin:0;">
-                                <input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>">
-                                <input type="hidden" name="redirect_page" value="beranda">
-                                <button type="submit" class="product-card__cart-btn" title="Tambah ke Keranjang" id="add-cart-<?= (int) $product['id'] ?>">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <circle cx="9" cy="21" r="1"/>
-                                        <circle cx="20" cy="21" r="1"/>
-                                        <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
-                                    </svg>
-                                </button>
-                            </form>
+                    <!-- Clickable image → detail page -->
+                    <a href="detail_produk.php?id=<?= (int) $product['id'] ?>" class="product-card__link" style="text-decoration:none;color:inherit;display:block;">
+                        <div class="product-card__image-wrapper">
+                            <img 
+                                src="<?= htmlspecialchars(getProductImage($product['name'], $product['image_url'] ?? '')) ?>" 
+                                alt="<?= htmlspecialchars($product['name']) ?>" 
+                                class="product-card__image"
+                                loading="lazy"
+                            >
+                            <?php if (!empty($product['badge_label'])): ?>
+                                <span class="product-card__badge <?= $product['badge_label'] === 'PALING LARIS' 
+                                    ? 'product-card__badge--laris' 
+                                    : 'product-card__badge--promo' ?>">
+                                    <?= htmlspecialchars($product['badge_label']) ?>
+                                </span>
+                            <?php endif; ?>
                         </div>
+                        <div class="product-card__info">
+                            <h3 class="product-card__name"><?= htmlspecialchars($product['name']) ?></h3>
+                            <p class="product-card__unit"><?= htmlspecialchars($product['unit_desc']) ?></p>
+                        </div>
+                    </a>
+                    <div class="product-card__footer" style="padding:0 12px 12px;">
+                        <span class="product-card__price"><?= formatRupiah((float) $product['price']) ?></span>
+                        <form action="cart_action.php" method="POST" style="margin:0;">
+                            <input type="hidden" name="action" value="add">
+                            <input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>">
+                            <input type="hidden" name="redirect_page" value="beranda">
+                            <button type="submit" class="product-card__cart-btn" title="Tambah ke Keranjang" id="add-cart-<?= (int) $product['id'] ?>">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="9" cy="21" r="1"/>
+                                    <circle cx="20" cy="21" r="1"/>
+                                    <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                                </svg>
+                            </button>
+                        </form>
                     </div>
                 </div>
             <?php endforeach; ?>

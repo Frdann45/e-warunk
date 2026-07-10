@@ -19,7 +19,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 }
 
 // ── Categories list ───────────────────────────────────────────
-$categories = ['Sembako', 'Rempah-rempah', 'Camilan'];
+$categories = ['Sembako', 'Rempah-rempah', 'Camilan', 'Kesehatan', 'Minuman', 'Perawatan & Kecantikan'];
 
 // ── Read flash message (set by product_action.php) ───────────
 $flashMessage = '';
@@ -114,13 +114,13 @@ $totalProducts = count($products);
             <?= $editProduct ? 'Edit Produk: ' . htmlspecialchars($editProduct['name']) : 'Tambah Produk Baru' ?>
         </h2>
         <?php if ($editProduct): ?>
-        <a href="index.php?page=tambah-produk" class="prod-btn prod-btn--cancel" style="margin-left:auto;">
+        <a href="admin.php?page=tambah-produk" class="prod-btn prod-btn--cancel" style="margin-left:auto;">
             ✕ Batal Edit
         </a>
         <?php endif; ?>
     </div>
 
-    <form action="product_action.php" method="POST" class="prod-form" id="prod-form">
+    <form action="product_action.php" method="POST" enctype="multipart/form-data" class="prod-form" id="prod-form">
         <input type="hidden" name="action" value="<?= $editProduct ? 'update' : 'add' ?>">
         <?php if ($editProduct): ?>
         <input type="hidden" name="product_id" value="<?= (int) $editProduct['id'] ?>">
@@ -160,7 +160,7 @@ $totalProducts = count($products);
             <div class="prod-form__field">
                 <label class="prod-form__label" for="pf-price">Harga (Rp) <span class="prod-form__req">*</span></label>
                 <input type="number" id="pf-price" name="price" class="prod-form__input"
-                    placeholder="Contoh: 65000" min="1" step="500"
+                    placeholder="Contoh: 65000" min="1" step="1"
                     value="<?= $editProduct['price'] ?? '' ?>" required>
             </div>
 
@@ -172,12 +172,50 @@ $totalProducts = count($products);
                     value="<?= htmlspecialchars($editProduct['badge_label'] ?? '') ?>">
             </div>
 
-            <!-- URL Gambar -->
-            <div class="prod-form__field">
-                <label class="prod-form__label" for="pf-img">Path Gambar</label>
-                <input type="text" id="pf-img" name="image_url" class="prod-form__input"
-                    placeholder="Contoh: images/product-beras.jpg"
-                    value="<?= htmlspecialchars($editProduct['image_url'] ?? 'images/logo.png') ?>">
+            <!-- Upload Gambar Produk -->
+            <div class="prod-form__field prod-form__field--wide">
+                <label class="prod-form__label" for="pf-img-upload">Foto Produk <span style="color:#999;font-weight:400;">(opsional)</span></label>
+                <div class="img-upload-area" id="img-upload-area">
+                    <!-- Preview Zone -->
+                    <div class="img-upload__preview" id="img-preview-wrap">
+                        <img id="img-preview"
+                             src="<?= htmlspecialchars($editProduct['image_url'] ?? '') ?>"
+                             alt="Preview Produk"
+                             style="<?= ($editProduct['image_url'] ?? '') ? 'display:block;' : 'display:none;' ?>">
+                        <button type="button" class="img-preview__remove" id="img-remove-btn"
+                                style="<?= ($editProduct['image_url'] ?? '') ? '' : 'display:none;' ?>"
+                                title="Hapus foto">✕</button>
+                    </div>
+                    <!-- Drop Zone -->
+                    <div class="img-upload__dropzone" id="img-dropzone">
+                        <div class="img-upload__icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="3" y="3" width="18" height="18" rx="3" ry="3"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                            </svg>
+                        </div>
+                        <div class="img-upload__dropzone-text">
+                            <p class="img-upload__text">Seret &amp; lepas foto di sini, atau <span class="img-upload__link">klik untuk pilih</span></p>
+                            <p class="img-upload__hint">PNG, JPG, JPEG, WEBP — Maks. 2 MB</p>
+                        </div>
+                        <input type="file" id="pf-img-upload" name="image_file" accept="image/png,image/jpeg,image/webp"
+                               style="display:none;">
+                    </div>
+                    <!-- URL Fallback -->
+                    <div class="img-upload__url-row">
+                        <span class="img-upload__url-label">Atau masukkan path gambar:</span>
+                        <input type="text" id="pf-img" name="image_url" class="prod-form__input img-upload__url-input"
+                               placeholder="Contoh: images/product-beras.jpg"
+                               value="<?= htmlspecialchars($editProduct['image_url'] ?? '') ?>">
+                    </div>
+                    <!-- Upload Progress -->
+                    <div class="img-upload__progress" id="img-upload-progress" style="display:none;">
+                        <div class="img-upload__progress-bar" id="img-upload-bar"></div>
+                    </div>
+                    <!-- Error Message -->
+                    <p class="img-upload__error" id="img-upload-error" style="display:none;"></p>
+                </div>
             </div>
         </div>
 
@@ -199,8 +237,8 @@ $totalProducts = count($products);
 <!-- ══════════════════════════════════════════════════════════
      SEARCH & FILTER BAR
      ══════════════════════════════════════════════════════════ -->
-<div class="prod-toolbar fade-in">
-    <form method="GET" action="index.php" class="prod-toolbar__form" id="prod-search-form">
+<div class="prod-toolbar fade-in" id="prod-results">
+    <form method="GET" action="admin.php" class="prod-toolbar__form" id="prod-search-form">
         <input type="hidden" name="page" value="tambah-produk">
         <div class="prod-toolbar__search-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="prod-toolbar__search-icon">
@@ -218,7 +256,7 @@ $totalProducts = count($products);
         </select>
         <button type="submit" class="prod-btn prod-btn--primary" id="btn-search-prod">Cari</button>
         <?php if ($search || $filterCat): ?>
-        <a href="index.php?page=tambah-produk" class="prod-btn prod-btn--ghost" id="btn-reset-search">Reset</a>
+        <a href="admin.php?page=tambah-produk#prod-results" class="prod-btn prod-btn--ghost" id="btn-reset-search">Reset</a>
         <?php endif; ?>
     </form>
     <span class="prod-toolbar__count"><?= $totalProducts ?> produk ditemukan</span>
@@ -248,7 +286,7 @@ $totalProducts = count($products);
                 <td style="color:var(--color-text-light);font-size:0.78rem;"><?= $i + 1 ?></td>
                 <td>
                     <div style="display:flex;align-items:center;gap:10px;">
-                        <img src="<?= htmlspecialchars(getProductImage($p['name'])) ?>"
+                        <img src="<?= htmlspecialchars(getProductImage($p['name'], $p['image_url'] ?? '')) ?>"
                              alt="<?= htmlspecialchars($p['name']) ?>"
                              style="width:36px;height:36px;object-fit:cover;border-radius:8px;border:1px solid #f0ece8;">
                         <span style="font-weight:600;color:var(--color-text-primary);">
@@ -257,7 +295,7 @@ $totalProducts = count($products);
                     </div>
                 </td>
                 <td>
-                    <span class="prod-cat-badge prod-cat-badge--<?= strtolower(str_replace([' ', '-'], '', $p['category'])) ?>">
+                    <span class="prod-cat-badge prod-cat-badge--<?= strtolower(str_replace([' ', '-', '&'], '', $p['category'])) ?>">
                         <?= htmlspecialchars($p['category']) ?>
                     </span>
                 </td>
@@ -280,7 +318,7 @@ $totalProducts = count($products);
                 <td style="text-align:center;padding-right:20px;">
                     <div style="display:flex;gap:8px;justify-content:center;">
                         <!-- Edit button -->
-                        <a href="index.php?page=tambah-produk&edit=<?= $p['id'] ?>#prod-form"
+                        <a href="admin.php?page=tambah-produk&edit=<?= $p['id'] ?>#prod-form"
                            class="prod-btn prod-btn--edit" id="btn-edit-<?= $p['id'] ?>"
                            title="Edit produk">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;">
@@ -323,6 +361,113 @@ $totalProducts = count($products);
      PAGE-SCOPED STYLES
      ══════════════════════════════════════════════════════════ -->
 <style>
+/* ── Image Upload Widget ─────────────────────────────────── */
+.img-upload-area {
+    border: 2px dashed #e0dbd5;
+    border-radius: 14px;
+    background: #faf8f6;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+.img-upload-area.drag-over {
+    border-color: #8B5E3C;
+    background: rgba(139,94,60,0.04);
+}
+.img-upload__preview {
+    position: relative;
+    display: none;
+    width: 100%;
+    max-height: 220px;
+    overflow: hidden;
+    border-bottom: 1px solid #f0ece8;
+}
+.img-upload__preview.has-image { display: block; }
+.img-upload__preview img {
+    width: 100%;
+    height: 140px;
+    object-fit: contain;
+    background: #fff;
+    display: block;
+}
+.img-preview__remove {
+    position: absolute;
+    top: 10px; right: 10px;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0,0,0,0.55);
+    color: #fff;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+    line-height: 1;
+}
+.img-preview__remove:hover { background: #b8382c; }
+.img-upload__dropzone {
+    padding: 14px 20px;
+    display: flex; flex-direction: row;
+    align-items: center; justify-content: center;
+    gap: 12px; cursor: pointer;
+    transition: background 0.15s;
+}
+.img-upload__dropzone:hover { background: rgba(139,94,60,0.04); }
+.img-upload__icon svg {
+    width: 28px; height: 28px;
+    color: #c4b5a5;
+    display: block;
+    flex-shrink: 0;
+}
+.img-upload__dropzone-text { display: flex; flex-direction: column; gap: 2px; }
+.img-upload__text {
+    font-size: 0.84rem; color: #666;
+    margin: 0;
+}
+.img-upload__link {
+    color: #6D3A1A; font-weight: 700;
+    text-decoration: underline; cursor: pointer;
+}
+.img-upload__hint {
+    font-size: 0.72rem; color: #bbb; margin: 0;
+}
+.img-upload__url-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px;
+    border-top: 1px solid #f0ece8;
+    background: #f4f1ee;
+    flex-wrap: wrap;
+}
+.img-upload__url-label {
+    font-size: 0.72rem; color: #999; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+.img-upload__url-input {
+    flex: 1; min-width: 180px;
+    font-size: 0.82rem !important;
+    padding: 7px 10px !important;
+    background: #fff !important;
+}
+.img-upload__progress {
+    height: 4px;
+    background: #e8e4e0;
+    border-radius: 0;
+    overflow: hidden;
+    margin-top: -2px;
+}
+.img-upload__progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #6D3A1A, #c87941);
+    width: 0%;
+    transition: width 0.3s;
+    border-radius: 0;
+}
+.img-upload__error {
+    font-size: 0.8rem; color: #b8382c;
+    padding: 6px 16px 10px;
+    margin: 0;
+}
+
 /* Flash messages */
 .prod-flash {
     display: flex; align-items: center; gap: 10px;
@@ -429,9 +574,12 @@ $totalProducts = count($products);
     display: inline-block; padding: 3px 9px; border-radius: 20px;
     font-size: 0.7rem; font-weight: 700;
 }
-.prod-cat-badge--sembako     { background: rgba(34,197,94,0.1);  color: #15803d; }
-.prod-cat-badge--rempahrempa { background: rgba(234,88,12,0.1);  color: #c2410c; }
-.prod-cat-badge--camilan     { background: rgba(139,92,246,0.1); color: #7c3aed; }
+.prod-cat-badge--sembako         { background: rgba(34,197,94,0.1);   color: #15803d; }
+.prod-cat-badge--rempahrempa     { background: rgba(234,88,12,0.1);   color: #c2410c; }
+.prod-cat-badge--camilan         { background: rgba(139,92,246,0.1);  color: #7c3aed; }
+.prod-cat-badge--kesehatan       { background: rgba(6,182,212,0.1);   color: #0e7490; }
+.prod-cat-badge--minuman         { background: rgba(59,130,246,0.1);  color: #1d4ed8; }
+.prod-cat-badge--perawatankecant { background: rgba(236,72,153,0.1);  color: #be185d; }
 
 /* Table row hover */
 .prod-table__row:hover { background: #faf8f6; }
@@ -439,18 +587,154 @@ $totalProducts = count($products);
 @media (max-width: 768px) {
     .prod-form__grid { grid-template-columns: 1fr 1fr; }
     .prod-form__field--wide { grid-column: 1 / -1; }
+    .img-upload__dropzone { padding: 20px 16px; }
 }
 @media (max-width: 480px) {
     .prod-form__grid { grid-template-columns: 1fr; }
+    .img-upload__url-row { flex-direction: column; align-items: stretch; }
 }
 </style>
 
 <script>
-// Auto-scroll to form when editing
-<?php if ($editProduct): ?>
-document.addEventListener('DOMContentLoaded', function() {
-    var form = document.getElementById('prod-form');
-    if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-});
-<?php endif; ?>
+(function() {
+    // ── Elements ──────────────────────────────────────────────
+    const area       = document.getElementById('img-upload-area');
+    const dropzone   = document.getElementById('img-dropzone');
+    const fileInput  = document.getElementById('pf-img-upload');
+    const previewWrap= document.getElementById('img-preview-wrap');
+    const previewImg = document.getElementById('img-preview');
+    const removeBtn  = document.getElementById('img-remove-btn');
+    const urlInput   = document.getElementById('pf-img');
+    const progress   = document.getElementById('img-upload-progress');
+    const progressBar= document.getElementById('img-upload-bar');
+    const errorEl    = document.getElementById('img-upload-error');
+
+    const MAX_SIZE   = 2 * 1024 * 1024; // 2 MB
+    const ALLOWED    = ['image/png','image/jpeg','image/webp'];
+
+    // ── Init: if editing and has existing image, show preview ─
+    <?php if ($editProduct && !empty($editProduct['image_url'])): ?>
+    previewWrap.classList.add('has-image');
+    previewImg.style.display = 'block';
+    removeBtn.style.display  = 'flex';
+    dropzone.style.display   = 'none';
+    <?php endif; ?>
+
+    // ── Sync: URL input -> preview (typed path) ───────────────
+    urlInput.addEventListener('input', function() {
+        var val = this.value.trim();
+        if (val) {
+            previewImg.src = val;
+            previewImg.onload = function() {
+                previewWrap.classList.add('has-image');
+                previewImg.style.display = 'block';
+                removeBtn.style.display  = 'flex';
+                dropzone.style.display   = 'none';
+            };
+            previewImg.onerror = function() {
+                previewWrap.classList.remove('has-image');
+                previewImg.style.display = 'none';
+                removeBtn.style.display  = 'none';
+                dropzone.style.display   = 'flex';
+            };
+        } else {
+            clearPreview();
+        }
+    });
+
+    // ── Click dropzone -> open file picker ────────────────────
+    dropzone.addEventListener('click', function() { fileInput.click(); });
+
+    // ── File selected via picker ──────────────────────────────
+    fileInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) handleFile(this.files[0]);
+    });
+
+    // ── Drag events ───────────────────────────────────────────
+    ['dragenter','dragover'].forEach(function(ev) {
+        area.addEventListener(ev, function(e) {
+            e.preventDefault();
+            area.classList.add('drag-over');
+        });
+    });
+    ['dragleave','drop'].forEach(function(ev) {
+        area.addEventListener(ev, function(e) {
+            e.preventDefault();
+            area.classList.remove('drag-over');
+        });
+    });
+    area.addEventListener('drop', function(e) {
+        var file = e.dataTransfer.files[0];
+        if (file) handleFile(file);
+    });
+
+    // ── Remove button ─────────────────────────────────────────
+    removeBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        clearPreview();
+        fileInput.value = '';
+        urlInput.value  = '';
+    });
+
+    // ── Handle file ───────────────────────────────────────────
+    function handleFile(file) {
+        hideError();
+        if (!ALLOWED.includes(file.type)) {
+            showError('Format file tidak didukung. Gunakan PNG, JPG, atau WEBP.');
+            return;
+        }
+        if (file.size > MAX_SIZE) {
+            showError('Ukuran file terlalu besar. Maksimal 2 MB.');
+            return;
+        }
+        // Show progress animation
+        progress.style.display = 'block';
+        progressBar.style.width = '0%';
+        var reader = new FileReader();
+        reader.onprogress = function(e) {
+            if (e.lengthComputable) {
+                progressBar.style.width = (e.loaded / e.total * 80) + '%';
+            }
+        };
+        reader.onload = function(e) {
+            progressBar.style.width = '100%';
+            setTimeout(function() { progress.style.display = 'none'; progressBar.style.width = '0%'; }, 400);
+            previewImg.src = e.target.result;
+            previewWrap.classList.add('has-image');
+            previewImg.style.display = 'block';
+            removeBtn.style.display  = 'flex';
+            dropzone.style.display   = 'none';
+            // Clear the URL input since file takes priority
+            urlInput.value = '';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function clearPreview() {
+        previewWrap.classList.remove('has-image');
+        previewImg.style.display = 'none';
+        previewImg.src           = '';
+        removeBtn.style.display  = 'none';
+        dropzone.style.display   = 'flex';
+    }
+
+    function showError(msg) {
+        errorEl.textContent    = '⚠ ' + msg;
+        errorEl.style.display  = 'block';
+    }
+    function hideError() {
+        errorEl.style.display = 'none';
+    }
+
+    // ── Auto-scroll: edit = ke form, search = ke hasil ───────
+    document.addEventListener('DOMContentLoaded', function() {
+        <?php if ($editProduct): ?>
+        var form = document.getElementById('prod-form');
+        if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        <?php elseif ($search || $filterCat): ?>
+        var results = document.getElementById('prod-results');
+        if (results) results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        <?php endif; ?>
+    });
+})();
 </script>

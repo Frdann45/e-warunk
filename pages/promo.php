@@ -103,7 +103,7 @@ $originalPrices = [
         <?php $p1 = getPromoProduct('Beras Rojolele Premium 5kg', $promoItems); ?>
         <div class="promo-card">
             <div class="promo-card__img-wrapper">
-                <img src="<?= htmlspecialchars(getProductImage($p1['name'])) ?>" alt="Beras Rojolele" class="promo-card__img">
+                <img src="<?= htmlspecialchars(getProductImage($p1['name'], $p1['image_url'] ?? '')) ?>" alt="Beras Rojolele" class="promo-card__img">
                 <span class="promo-card__discount-badge">HEMAT 15%</span>
             </div>
             <div class="promo-card__info">
@@ -136,7 +136,7 @@ $originalPrices = [
         <?php $p2 = getPromoProduct('Minyak Goreng SunCo 2L', $promoItems); ?>
         <div class="promo-card">
             <div class="promo-card__img-wrapper">
-                <img src="<?= htmlspecialchars(getProductImage($p2['name'])) ?>" alt="Minyak SunCo" class="promo-card__img">
+                <img src="<?= htmlspecialchars(getProductImage($p2['name'], $p2['image_url'] ?? '')) ?>" alt="Minyak SunCo" class="promo-card__img">
                 <span class="promo-card__discount-badge">HEMAT 20%</span>
             </div>
             <div class="promo-card__info">
@@ -169,7 +169,7 @@ $originalPrices = [
         <?php $p3 = getPromoProduct('Telur Ayam Negeri 1kg', $promoItems); ?>
         <div class="promo-card">
             <div class="promo-card__img-wrapper">
-                <img src="<?= htmlspecialchars(getProductImage($p3['name'])) ?>" alt="Telur Ayam" class="promo-card__img">
+                <img src="<?= htmlspecialchars(getProductImage($p3['name'], $p3['image_url'] ?? '')) ?>" alt="Telur Ayam" class="promo-card__img">
                 <span class="promo-card__discount-badge">HEMAT 30%</span>
             </div>
             <div class="promo-card__info">
@@ -202,7 +202,7 @@ $originalPrices = [
         <?php $p4 = getPromoProduct('Gula Pasir Gulaku 1kg', $promoItems); ?>
         <div class="promo-card">
             <div class="promo-card__img-wrapper">
-                <img src="<?= htmlspecialchars(getProductImage($p4['name'])) ?>" alt="Gulaku" class="promo-card__img">
+                <img src="<?= htmlspecialchars(getProductImage($p4['name'], $p4['image_url'] ?? '')) ?>" alt="Gulaku" class="promo-card__img">
                 <span class="promo-card__discount-badge">HEMAT 10%</span>
             </div>
             <div class="promo-card__info">
@@ -253,7 +253,7 @@ $originalPrices = [
                     </form>
                 </div>
                 <div class="promo-bundle-card__image-wrapper">
-                    <img src="<?= htmlspecialchars(getProductImage($pkg['name'])) ?>" alt="Paket Sembako Berkah" class="promo-bundle-card__image">
+                    <img src="<?= htmlspecialchars(getProductImage($pkg['name'], $pkg['image_url'] ?? '')) ?>" alt="Paket Sembako Berkah" class="promo-bundle-card__image">
                 </div>
             </div>
         </div>
@@ -279,7 +279,7 @@ $originalPrices = [
             <?php $pTeh = getPromoProduct('Teh Celup Premium 25s', $promoItems); ?>
             <div class="promo-stack-card">
                 <div class="promo-stack-card__image-col">
-                    <img src="<?= htmlspecialchars(getProductImage($pTeh['name'])) ?>" alt="Teh Celup" class="promo-stack-card__img">
+                    <img src="<?= htmlspecialchars(getProductImage($pTeh['name'], $pTeh['image_url'] ?? '')) ?>" alt="Teh Celup" class="promo-stack-card__img">
                     <span class="promo-stack-card__badge">HEMAT 5%</span>
                 </div>
                 <div class="promo-stack-card__info-col">
@@ -304,7 +304,7 @@ $originalPrices = [
             <?php $pTepung = getPromoProduct('Tepung Terigu Segitiga Biru 1kg', $promoItems); ?>
             <div class="promo-stack-card">
                 <div class="promo-stack-card__image-col">
-                    <img src="<?= htmlspecialchars(getProductImage($pTepung['name'])) ?>" alt="Tepung Terigu" class="promo-stack-card__img">
+                    <img src="<?= htmlspecialchars(getProductImage($pTepung['name'], $pTepung['image_url'] ?? '')) ?>" alt="Tepung Terigu" class="promo-stack-card__img">
                     <span class="promo-stack-card__badge">HEMAT 12%</span>
                 </div>
                 <div class="promo-stack-card__info-col">

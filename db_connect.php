@@ -52,13 +52,26 @@ function getDBConnection(): PDO
 $pdo = getDBConnection();
 
 /**
- * Get local product image path by name.
+ * Get product image path.
+ *
+ * Priority order:
+ *   1. $dbUrl — value from products.image_url (uploaded file)
+ *   2. Name map — hardcoded legacy fallback
+ *   3. Default  — images/logo.png
  *
  * @param  string $name
+ * @param  string $dbUrl  Value from products.image_url (default '')
  * @return string
  */
-function getProductImage(string $name): string
+function getProductImage(string $name, string $dbUrl = ''): string
 {
+    // 1. Use DB URL if it is a real uploaded/custom path that exists on disk
+    if ($dbUrl !== '' && $dbUrl !== 'images/logo.png') {
+        if (file_exists(__DIR__ . '/' . $dbUrl)) {
+            return $dbUrl;
+        }
+    }
+
     $map = [
         // Sembako
         'Beras Premium' => 'images/product-beras.jpg',
@@ -131,9 +144,10 @@ function getProductImage(string $name): string
         'Coca-Cola Kaleng 330ml' => 'images/cocacola.jpg',
         'Jus Buavita Jambu 250ml' => 'images/buavita.jpg',
         'Yakult Probiotik (5 Pcs)' => 'images/yakult.jpg',
-        'Kopi Good Day Cappuccino' => 'images/goodday.jpg'
+        'Kopi Good Day Cappuccino' => 'images/goodday.jpg',
     ];
 
+    // 3. Fallback to logo if name not in map
     return $map[$name] ?? 'images/logo.png';
 }
 

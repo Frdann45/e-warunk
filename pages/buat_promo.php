@@ -181,7 +181,7 @@ $totalWithoutBadge = count($allProducts) - $totalWithBadge;
             <tr class="prod-table__row">
                 <td>
                     <div style="display:flex;align-items:center;gap:10px;">
-                        <img src="<?= htmlspecialchars(getProductImage($p['name'])) ?>"
+                        <img src="<?= htmlspecialchars(getProductImage($p['name'], $p['image_url'] ?? '')) ?>"
                              alt="<?= htmlspecialchars($p['name']) ?>"
                              style="width:36px;height:36px;object-fit:cover;border-radius:8px;border:1px solid #f0ece8;">
                         <div>

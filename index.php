@@ -98,12 +98,12 @@ $userStatus   = $isLoggedIn
 <div class="user-layout" id="user-layout">
 
     <!-- ═══════════════════════════════════════════════════════
-         USER HEADER (Shopee-Style)
+         USER HEADER 
          ═══════════════════════════════════════════════════════ -->
     <?php include __DIR__ . '/header_user.php'; ?>
 
     <!-- ═══════════════════════════════════════════════════════
-         MAIN CONTENT AREA — Full Width (No Sidebar)
+         MAIN CONTENT AREA — Full Width 
          ═══════════════════════════════════════════════════════ -->
     <main class="user-main" id="user-main-content">
         <?php
@@ -159,18 +159,9 @@ $userStatus   = $isLoggedIn
     </main>
 
     <!-- ═══════════════════════════════════════════════════════
-         FOOTER
+         FOOTER — 4-Column Alfagift-Style
          ═══════════════════════════════════════════════════════ -->
-    <footer class="user-footer" id="user-footer">
-        <div class="user-footer__inner">
-            <span>&copy; 2026 Warung Tiga Saudara. All rights reserved.</span>
-            <div class="user-footer__links">
-                <a href="index.php?page=kontak" class="user-footer__link" id="link-hubungi">Hubungi Kami</a>
-                <a href="#" class="user-footer__link" id="link-privasi">Kebijakan Privasi</a>
-                <a href="#" class="user-footer__link" id="link-syarat">Syarat Layanan</a>
-            </div>
-        </div>
-    </footer>
+    <?php include __DIR__ . '/footer.php'; ?>
 
 </div>
 

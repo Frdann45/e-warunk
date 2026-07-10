@@ -92,47 +92,51 @@ try {
             }
             ?>
             <div class="product-card fade-in" id="product-<?= htmlspecialchars($product['id']) ?>">
-                <div class="product-card__image-wrapper">
-                    <img 
-                        src="<?= htmlspecialchars(getProductImage($product['name'])) ?>" 
-                        alt="<?= htmlspecialchars($product['name']) ?>" 
-                        class="product-card__image"
-                        loading="lazy"
-                    >
-                    <?php if (!empty($product['badge_label'])): ?>
-                        <span class="product-card__badge 
-                            <?= ($product['badge_label'] === 'Terlaris' || $product['badge_label'] === 'Stok Banyak') 
-                                ? 'product-card__badge--laris' 
-                                : 'product-card__badge--promo' ?>">
-                            <?= htmlspecialchars($product['badge_label']) ?>
-                        </span>
-                    <?php endif; ?>
-                    <button class="btn-wishlist" title="Tambah ke Wishlist">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
-                        </svg>
-                    </button>
-                </div>
-
-                <div class="product-card__info">
-                    <h3 class="product-card__name"><?= htmlspecialchars($product['name']) ?></h3>
-                    <p class="product-card__desc"><?= htmlspecialchars($desc) ?></p>
-                    <div class="product-card__footer">
-                        <div>
-                            <span class="product-card__price"><?= formatRupiah((float) $product['price']) ?></span>
-                            <span class="product-card__unit-label">/ <?= htmlspecialchars(explode(' / ', $product['unit_desc'])[0]) ?></span>
-                        </div>
-                        <form action="cart_action.php" method="POST" style="margin:0;">
-                            <input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>">
-                            <input type="hidden" name="redirect_page" value="rempah<?= $searchQuery !== '' ? '&search=' . urlencode($searchQuery) : '' ?>">
-                            <button type="submit" class="product-card__cart-btn product-card__cart-btn--round" title="Tambah ke Keranjang">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <line x1="12" y1="5" x2="12" y2="19"/>
-                                    <line x1="5" y1="12" x2="19" y2="12"/>
-                                </svg>
-                            </button>
-                        </form>
+                <!-- Clickable image → detail page -->
+                <a href="detail_produk.php?id=<?= (int) $product['id'] ?>" class="product-card__link" style="text-decoration:none;color:inherit;display:block;">
+                    <div class="product-card__image-wrapper">
+                        <img 
+                            src="<?= htmlspecialchars(getProductImage($product['name'], $product['image_url'] ?? '')) ?>" 
+                            alt="<?= htmlspecialchars($product['name']) ?>" 
+                            class="product-card__image"
+                            loading="lazy"
+                        >
+                        <?php if (!empty($product['badge_label'])): ?>
+                            <span class="product-card__badge 
+                                <?= ($product['badge_label'] === 'Terlaris' || $product['badge_label'] === 'Stok Banyak') 
+                                    ? 'product-card__badge--laris' 
+                                    : 'product-card__badge--promo' ?>">
+                                <?= htmlspecialchars($product['badge_label']) ?>
+                            </span>
+                        <?php endif; ?>
+                        <button class="btn-wishlist" title="Tambah ke Wishlist" onclick="event.preventDefault();event.stopPropagation();">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+                            </svg>
+                        </button>
                     </div>
+
+                    <div class="product-card__info">
+                        <h3 class="product-card__name"><?= htmlspecialchars($product['name']) ?></h3>
+                        <p class="product-card__desc"><?= htmlspecialchars($desc) ?></p>
+                    </div>
+                </a>
+                <div class="product-card__footer">
+                    <div>
+                        <span class="product-card__price"><?= formatRupiah((float) $product['price']) ?></span>
+                        <span class="product-card__unit-label">/ <?= htmlspecialchars(explode(' / ', $product['unit_desc'])[0]) ?></span>
+                    </div>
+                    <form action="cart_action.php" method="POST" style="margin:0;">
+                        <input type="hidden" name="action" value="add">
+                        <input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>">
+                        <input type="hidden" name="redirect_page" value="rempah<?= $searchQuery !== '' ? '&search=' . urlencode($searchQuery) : '' ?>">
+                        <button type="submit" class="product-card__cart-btn product-card__cart-btn--round" title="Tambah ke Keranjang">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                        </button>
+                    </form>
                 </div>
             </div>
         <?php endforeach; ?>

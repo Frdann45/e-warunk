@@ -14,6 +14,51 @@
  */
 require_once __DIR__ . '/../db_connect.php';
 
+// Handle order actions (Cancel or Complete)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    $action    = $_POST['action'];
+    $orderCode = isset($_POST['order_code']) ? trim($_POST['order_code']) : '';
+    
+    if ($action === 'cancel' && !empty($orderCode)) {
+        try {
+            $stmt = $pdo->prepare("SELECT status FROM orders WHERE order_code = ?");
+            $stmt->execute([$orderCode]);
+            $order = $stmt->fetch();
+            
+            if ($order) {
+                $status = $order['status'];
+                if ($status === 'Belum Bayar' || $status === 'Diproses') {
+                    $stmtUpdate = $pdo->prepare("UPDATE orders SET status = 'Dibatalkan' WHERE order_code = ?");
+                    $stmtUpdate->execute([$orderCode]);
+                    $_SESSION['cart_message'] = 'Pesanan #' . htmlspecialchars($orderCode) . ' berhasil dibatalkan.';
+                } else {
+                    $_SESSION['cart_message'] = 'Pesanan tidak dapat dibatalkan karena sudah melewati proses pengemasan.';
+                }
+            } else {
+                $_SESSION['cart_message'] = 'Pesanan tidak ditemukan.';
+            }
+        } catch (PDOException $e) {
+            error_log('Order cancel error: ' . $e->getMessage());
+            $_SESSION['cart_message'] = 'Terjadi kesalahan sistem, silakan coba lagi.';
+        }
+        echo "<script>window.location.href = 'index.php?page=riwayat';</script>";
+        exit;
+    }
+    
+    if ($action === 'complete' && !empty($orderCode)) {
+        try {
+            $stmtUpdate = $pdo->prepare("UPDATE orders SET status = 'Selesai' WHERE order_code = ?");
+            $stmtUpdate->execute([$orderCode]);
+            $_SESSION['cart_message'] = 'Pesanan #' . htmlspecialchars($orderCode) . ' telah selesai. Terima kasih!';
+        } catch (PDOException $e) {
+            error_log('Order complete error: ' . $e->getMessage());
+            $_SESSION['cart_message'] = 'Terjadi kesalahan sistem, silakan coba lagi.';
+        }
+        echo "<script>window.location.href = 'index.php?page=riwayat';</script>";
+        exit;
+    }
+}
+
 // Tab / filter variables
 $selectedStatus = isset($_GET['status']) ? $_GET['status'] : 'Semua';
 $searchQuery    = isset($_GET['search']) ? trim($_GET['search']) : '';
@@ -206,15 +251,35 @@ function getStatusLabel(string $status): string {
 
                     <!-- Action Buttons Row -->
                     <div class="order-card__actions">
-                        <?php if ($order['status'] === 'Dikirim'): ?>
-                            <button class="order-card__btn order-card__btn--primary" title="Konfirmasi pesanan selesai">Pesanan Selesai</button>
-                            <button class="order-card__btn" title="Ajukan pengembalian">Ajukan Pengembalian</button>
-                        <?php elseif ($order['status'] === 'Selesai'): ?>
-                            <button class="order-card__btn order-card__btn--primary" title="Beli lagi">Beli Lagi</button>
+                        <?php if ($order['status'] === 'Belum Bayar'): ?>
+                            <?php if (!empty($order['payment_url'])): ?>
+                                <a href="<?= htmlspecialchars($order['payment_url']) ?>" class="order-card__btn order-card__btn--primary" title="Lanjutkan pembayaran aman" style="text-align: center; display: inline-flex; align-items: center; justify-content: center; text-decoration: none;">Bayar Sekarang</a>
+                            <?php else: ?>
+                                <span class="order-card__actions-note" style="color: var(--color-accent-red); margin-right: auto;">Link pembayaran tidak tersedia.</span>
+                            <?php endif; ?>
+                            <form action="" method="POST" style="display: inline;" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
+                                <input type="hidden" name="action" value="cancel">
+                                <input type="hidden" name="order_code" value="<?= htmlspecialchars($order['order_code']) ?>">
+                                <button type="submit" class="order-card__btn order-card__btn--danger" title="Batalkan pesanan ini">Batalkan Pesanan</button>
+                            </form>
                         <?php elseif ($order['status'] === 'Diproses'): ?>
-                            <span class="order-card__actions-note">Silakan konfirmasi setelah menerima dan mengecek pesanan.</span>
+                            <form action="" method="POST" style="display: inline;" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
+                                <input type="hidden" name="action" value="cancel">
+                                <input type="hidden" name="order_code" value="<?= htmlspecialchars($order['order_code']) ?>">
+                                <button type="submit" class="order-card__btn order-card__btn--danger" title="Batalkan pesanan ini">Batalkan Pesanan</button>
+                            </form>
+                            <span class="order-card__actions-note" style="margin-left: auto;">Pesanan sedang dikemas oleh admin toko.</span>
+                        <?php elseif ($order['status'] === 'Dikirim'): ?>
+                            <form action="" method="POST" style="display: inline;" onsubmit="return confirm('Apakah Anda yakin pesanan sudah sampai dan ingin menyelesaikannya?');">
+                                <input type="hidden" name="action" value="complete">
+                                <input type="hidden" name="order_code" value="<?= htmlspecialchars($order['order_code']) ?>">
+                                <button type="submit" class="order-card__btn order-card__btn--primary" title="Konfirmasi pesanan selesai">Pesanan Selesai</button>
+                            </form>
+                            <button type="button" class="order-card__btn" title="Ajukan pengembalian">Ajukan Pengembalian</button>
+                        <?php elseif ($order['status'] === 'Selesai'): ?>
+                            <button type="button" class="order-card__btn order-card__btn--primary" title="Beli lagi">Beli Lagi</button>
                         <?php endif; ?>
-                        <button class="order-card__btn" title="Hubungi penjual">Hubungi Penjual</button>
+                        <button type="button" class="order-card__btn" title="Hubungi penjual">Hubungi Penjual</button>
                     </div>
 
                 </div>

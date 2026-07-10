@@ -103,7 +103,7 @@ $totalBill        = $totalOriginal + $shippingFee - $shippingDiscount;
 <?php else: ?>
     <form action="" method="POST" id="checkout-form">
         <input type="hidden" name="place_order" value="1">
-        <input type="hidden" name="payment_method" id="input-payment-method" value="Bank Transfer">
+        <input type="hidden" name="payment_method" id="input-payment-method" value="Virtual Account">
         <?php if ($primaryAddress): ?>
         <input type="hidden" name="address_id" value="<?= (int) $primaryAddress['id'] ?>">
         <?php endif; ?>
@@ -168,7 +168,7 @@ $totalBill        = $totalOriginal + $shippingFee - $shippingDiscount;
                                 $qty = $item['qty'];
                                 $sub = $item['subtotal']; ?>
                                 <div class="checkout-item-row">
-                                    <img src="<?= htmlspecialchars(getProductImage($p['name'])) ?>" alt="<?= htmlspecialchars($p['name']) ?>" class="checkout-item-row__image">
+                                    <img src="<?= htmlspecialchars(getProductImage($p['name'], $p['image_url'] ?? '')) ?>" alt="<?= htmlspecialchars($p['name']) ?>" class="checkout-item-row__image">
                                     <div class="checkout-item-row__info">
                                         <h4 class="checkout-item-row__name"><?= htmlspecialchars($p['name']) ?></h4>
                                         <p class="checkout-item-row__qty"><?= $qty ?> x <?= formatRupiah((float) $p['price']) ?></p>
@@ -193,32 +193,89 @@ $totalBill        = $totalOriginal + $shippingFee - $shippingDiscount;
                     </div>
                     <div class="checkout-section__body">
                         <div class="payment-methods-grid">
-                            <div class="payment-method-box payment-method-box--active" data-method="Bank Transfer" id="pay-bank">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="payment-method-box__icon">
-                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
-                                </svg>
-                                <span class="payment-method-box__name">Bank Transfer</span>
+                            <!-- Virtual Account -->
+                            <div class="payment-method-box payment-method-box--active" data-method="Virtual Account" id="pay-va">
+                                <div class="payment-method-box__header">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="payment-method-box__icon">
+                                        <path d="M3 21h18M3 10h18M5 10V6a2 2 0 012-2h10a2 2 0 012 2v4M4 21v-7a1 1 0 011-1h14a1 1 0 011 1v7M10 14v3M14 14v3"/>
+                                    </svg>
+                                    <span class="payment-method-box__name">Virtual Account (VA) Bank</span>
+                                </div>
+                                <div class="payment-method-box__description">Transfer bank otomatis dengan nomor rekening unik.</div>
+                                <div class="payment-logo-row">
+                                    <img src="images/logo-bca.png" alt="BCA" class="payment-brand-logo">
+                                    <img src="images/logo-mandiri.jpg" alt="Mandiri" class="payment-brand-logo">
+                                    <img src="images/logo-bni.jpg" alt="BNI" class="payment-brand-logo">
+                                    <img src="images/logo-bri.jpg" alt="BRI" class="payment-brand-logo">
+                                    <img src="images/logo-permata.jpg" alt="Permata" class="payment-brand-logo">
+                                </div>
                                 <span class="payment-method-box__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
                             </div>
+
+                            <!-- E-Wallet -->
                             <div class="payment-method-box" data-method="E-Wallet" id="pay-wallet">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="payment-method-box__icon">
-                                    <rect x="2" y="5" width="20" height="14" rx="2" ry="2"/><line x1="2" y1="10" x2="22" y2="10"/>
-                                </svg>
-                                <span class="payment-method-box__name">E-Wallet</span>
+                                <div class="payment-method-box__header">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="payment-method-box__icon">
+                                        <rect x="2" y="5" width="20" height="14" rx="2" ry="2"/>
+                                        <line x1="2" y1="10" x2="22" y2="10"/>
+                                        <path d="M16 14h2"/>
+                                    </svg>
+                                    <span class="payment-method-box__name">E-Wallet (Dompet Digital)</span>
+                                </div>
+                                <div class="payment-method-box__description">Bayar praktis lewat aplikasi HP Anda secara instan.</div>
+                                <div class="payment-logo-row">
+                                    <img src="images/logo-gopay.jpg" alt="GoPay" class="payment-brand-logo">
+                                    <img src="images/logo-ovo.jpg" alt="OVO" class="payment-brand-logo">
+                                    <img src="images/logo-dana.jpg" alt="DANA" class="payment-brand-logo">
+                                    <img src="images/logo-shopeepay.jpg" alt="ShopeePay" class="payment-brand-logo">
+                                    <img src="images/logo-linkaja.jpg" alt="LinkAja" class="payment-brand-logo">
+                                </div>
                                 <span class="payment-method-box__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
                             </div>
+
+                            <!-- QRIS -->
+                            <div class="payment-method-box" data-method="QRIS" id="pay-qris">
+                                <div class="payment-method-box__header">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="payment-method-box__icon">
+                                        <rect x="3" y="3" width="7" height="7"/>
+                                        <rect x="14" y="3" width="7" height="7"/>
+                                        <rect x="3" y="14" width="7" height="7"/>
+                                        <rect x="14" y="14" width="7" height="7"/>
+                                        <line x1="7" y1="7" x2="7" y2="7"/>
+                                        <line x1="17" y1="7" x2="17" y2="7"/>
+                                        <line x1="7" y1="17" x2="7" y2="17"/>
+                                        <line x1="17" y1="17" x2="17" y2="17"/>
+                                    </svg>
+                                    <span class="payment-method-box__name">QRIS</span>
+                                </div>
+                                <div class="payment-method-box__description">Scan satu kode QR melalui aplikasi m-banking atau e-wallet apa saja.</div>
+                                <div class="payment-logo-row payment-logo-row--center">
+                                    <img src="images/logo-qris.jpg" alt="QRIS" class="payment-brand-logo payment-brand-logo--large">
+                                </div>
+                                <span class="payment-method-box__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+                            </div>
+
+                            <!-- COD -->
                             <div class="payment-method-box" data-method="COD" id="pay-cod">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="payment-method-box__icon">
-                                    <rect x="1" y="3" width="15" height="13" rx="2" ry="2"/>
-                                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
-                                    <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-                                </svg>
-                                <span class="payment-method-box__name">COD</span>
+                                <div class="payment-method-box__header">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="payment-method-box__icon">
+                                        <rect x="1" y="3" width="15" height="13" rx="2" ry="2"/>
+                                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                                        <circle cx="5.5" cy="18.5" r="2.5"/>
+                                        <circle cx="18.5" cy="18.5" r="2.5"/>
+                                    </svg>
+                                    <span class="payment-method-box__name">Cash On Delivery (COD)</span>
+                                </div>
+                                <div class="payment-method-box__description">Bayar tunai di tempat secara langsung saat kurir mengantar barang.</div>
+                                <div class="payment-logo-row payment-logo-row--center">
+                                    <span style="font-size: 0.72rem; font-weight: 700; color: #7F5A44; background: #FFEBE6; padding: 4px 10px; border-radius: 12px; border: 1px solid #FFD8CC;">BAYAR DI TEMPAT</span>
+                                </div>
                                 <span class="payment-method-box__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
 
             <!-- Checkout Summary Sidebar -->
