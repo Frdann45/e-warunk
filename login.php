@@ -15,7 +15,7 @@ session_start();
 // If already logged in, redirect based on role
 if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
     if ($_SESSION['role'] === 'admin') {
-        header('Location: admin.php');
+        header('Location: admin/admin.php');
     } else {
         header('Location: index.php');
     }
@@ -23,7 +23,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
 }
 
 // ── Database Connection ─────────────────────────────────────
-require_once __DIR__ . '/db_connect.php';
+require_once __DIR__ . '/config/db_connect.php';
 
 // ── Handle Login & Register POST ────────────────────────────
 $errorMessage    = '';
@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['role']    = $user['role'];
 
                     if ($user['role'] === 'admin') {
-                        header('Location: admin.php');
+                        header('Location: admin/admin.php');
                     } else {
                         header('Location: index.php');
                     }
@@ -159,18 +159,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         :root {
-            --primary:        #6D3A1A;
-            --primary-dark:   #4A2710;
-            --primary-light:  #8B5E3C;
-            --primary-hover:  #5A2F15;
-            --accent-red:     #B8382C;
-            --bg:             #F5F3F0;
+            --primary:        #0B2D72;
+            --primary-dark:   #0C1E43;
+            --primary-light:  #0AC4E0;
+            --primary-hover:  #0992C2;
+            --accent-red:     #0AC4E0;
+            --bg:             #FFFFFF;
             --bg-card:        #FFFFFF;
-            --text-primary:   #2D2D2D;
-            --text-secondary: #6B6B6B;
-            --text-light:     #999999;
-            --border:         #E8E4E0;
-            --border-light:   #F0ECE8;
+            --text-primary:   #0C1E43;
+            --text-secondary: #4B5F83;
+            --text-light:     #8FA0B0;
+            --border:         #D1D9E6;
+            --border-light:   #E2E8EE;
             --radius-md:      10px;
             --radius-lg:      16px;
             --radius-xl:      20px;
@@ -393,8 +393,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             align-items: center;
             gap: 10px;
             padding: 12px 16px;
-            background: rgba(109, 58, 26, 0.06);
-            border: 1px solid rgba(109, 58, 26, 0.2);
+            background: rgba(11, 45, 114, 0.06);
+            border: 1px solid rgba(11, 45, 114, 0.2);
             border-radius: var(--radius-md);
             color: var(--primary-dark);
             font-size: 0.82rem;
@@ -448,7 +448,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             height: 18px;
             color: var(--text-light);
             pointer-events: none;
-            transition: color var(--transition);
+            transition: color var(--transition);    
         }
 
         .login-field__input {
@@ -471,7 +471,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .login-field__input:focus {
             border-color: var(--primary-light);
             background: #FFFFFF;
-            box-shadow: 0 0 0 3px rgba(109, 58, 26, 0.08);
+            box-shadow: 0 0 0 3px rgba(11, 45, 114, 0.08);
         }
 
         .login-field__input:focus + .login-field__icon,
@@ -544,7 +544,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: var(--radius-md);
             cursor: pointer;
             transition: all var(--transition);
-            box-shadow: 0 4px 16px rgba(109, 58, 26, 0.25);
+            box-shadow: 0 4px 16px rgba(11, 45, 114, 0.25);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -555,7 +555,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .login-submit-btn:hover {
             background: linear-gradient(135deg, var(--primary-hover), var(--primary-dark));
             transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(109, 58, 26, 0.35);
+            box-shadow: 0 6px 20px rgba(11, 45, 114, 0.35);
         }
 
         .login-submit-btn:active {
@@ -612,7 +612,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .auth-tab-btn.auth-tab-btn--active {
             background: var(--bg-card);
             color: var(--primary-dark);
-            box-shadow: 0 2px 8px rgba(109, 58, 26, 0.12);
+            box-shadow: 0 2px 8px rgba(11, 45, 114, 0.12);
         }
 
         /* ── Panel Sections (login/register) ──────────────── */
@@ -756,7 +756,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
          ═══════════════════════════════════════════════════════ -->
     <div class="login-brand">
         <div class="login-brand__logo">
-            <img src="images/logo.png" alt="E-WARUNG Logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot;><path d=&quot;M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z&quot;/><line x1=&quot;3&quot; y1=&quot;6&quot; x2=&quot;21&quot; y2=&quot;6&quot;/><path d=&quot;M16 10a4 4 0 01-8 0&quot;/></svg>';">
+            <img src="assets/images/logo.png" alt="E-WARUNG Logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot;><path d=&quot;M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z&quot;/><line x1=&quot;3&quot; y1=&quot;6&quot; x2=&quot;21&quot; y2=&quot;6&quot;/><path d=&quot;M16 10a4 4 0 01-8 0&quot;/></svg>';">
         </div>
         <h1 class="login-brand__title">Selamat Datang<br>di E-WARUNG</h1>
         <p class="login-brand__subtitle">Warung Tiga Saudara — Pusat belanja serba ada untuk kebutuhan sehari-hari Anda.</p>

@@ -35,9 +35,9 @@ $headerCartCount = isset($cartCount) ? (int) $cartCount : 0;
     <div class="user-header__inner">
 
         <!-- ── Brand / Logo ──────────────────────────────────── -->
-        <a href="index.php" class="user-header__brand" id="user-brand-link">
+        <a href="<?= BASE_URL ?>index.php" class="user-header__brand" id="user-brand-link">
             <span class="user-header__logo">
-                <img src="images/logo.png" alt="Logo Warung Tiga Saudara" onerror="this.style.display='none';">
+                <img src="<?= BASE_URL ?>assets/images/logo.png" alt="Logo Warung Tiga Saudara" onerror="this.style.display='none';">
             </span>
             <span class="user-header__brand-text">e-warung</span>
         </a>
@@ -45,7 +45,7 @@ $headerCartCount = isset($cartCount) ? (int) $cartCount : 0;
 
         <!-- ── Global Search Bar ─────────────────────────────── -->
         <div class="user-header__search-wrapper">
-            <form action="index.php" method="GET" class="user-header__search-form" id="global-search-form">
+            <form action="<?= BASE_URL ?>index.php" method="GET" class="user-header__search-form" id="global-search-form">
                 <input type="hidden" name="page" value="pencarian">
                 <input
                     type="text"
@@ -186,7 +186,7 @@ $headerCartCount = isset($cartCount) ? (int) $cartCount : 0;
                         </li>
                         <li>
                             <?php if ($headerLoggedIn): ?>
-                            <a href="logout.php" class="user-dropdown__item user-dropdown__item--logout" id="udm-keluar">
+                            <a href="<?= BASE_URL ?>logout.php" class="user-dropdown__item user-dropdown__item--logout" id="udm-keluar">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="user-dropdown__icon">
                                     <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
                                     <polyline points="16 17 21 12 16 7"/>
@@ -195,7 +195,7 @@ $headerCartCount = isset($cartCount) ? (int) $cartCount : 0;
                                 <span>Keluar</span>
                             </a>
                             <?php else: ?>
-                            <a href="login.php" class="user-dropdown__item" id="udm-masuk">
+                            <a href="<?= BASE_URL ?>login.php" class="user-dropdown__item" id="udm-masuk">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="user-dropdown__icon">
                                     <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/>
                                     <polyline points="10 17 15 12 10 7"/>

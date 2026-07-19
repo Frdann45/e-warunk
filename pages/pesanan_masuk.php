@@ -11,7 +11,7 @@
  * ============================================================
  */
 
-require_once __DIR__ . '/../db_connect.php';
+require_once dirname(__DIR__) . '/config/db_connect.php';
 
 // ── Handle Action POST early ────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
             $_SESSION['cart_message'] = "Gagal memperbarui status pesanan.";
         }
     }
-    header('Location: index.php?page=pesanan-masuk');
+    header('Location: ' . BASE_URL . 'admin/admin.php?page=pesanan-masuk');
     exit;
 }
 

@@ -5,7 +5,7 @@
  * Author ID: 11240044
  * =======
  */
-require_once __DIR__ . '/../db_connect.php';
+require_once dirname(__DIR__) . '/config/db_connect.php';
 
 // Helper to get cart products with quantities
 $cartItems = [];
@@ -64,7 +64,7 @@ $totalBill = $totalOriginal - $promoDiscount + $serviceFee;
         <p class="cart-empty__desc">Kembali ke katalog dan tambahkan beberapa produk segar pilihan Anda.</p>
         <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px;">
             <a href="index.php?page=sembako" class="btn-shop-now">Belanja Sekarang</a>
-            <form action="cart_action.php" method="POST">
+            <form action="<?= BASE_URL ?>process/cart_action.php" method="POST">
                 <input type="hidden" name="action" value="seed_demo">
                 <button type="submit" class="btn-seed-demo">Gunakan Data Demo</button>
             </form>
@@ -90,7 +90,7 @@ $totalBill = $totalOriginal - $promoDiscount + $serviceFee;
                     <div class="cart-card__actions">
                         <!-- Quantity selector form -->
                         <div class="qty-selector">
-                            <form action="cart_action.php" method="POST" style="margin:0;">
+                            <form action="<?= BASE_URL ?>process/cart_action.php" method="POST" style="margin:0;">
                                 <input type="hidden" name="action" value="update">
                                 <input type="hidden" name="product_id" value="<?= (int) $p['id'] ?>">
                                 <input type="hidden" name="qty" value="<?= $qty - 1 ?>">
@@ -98,7 +98,7 @@ $totalBill = $totalOriginal - $promoDiscount + $serviceFee;
                                 <button type="submit" class="btn-qty" <?= $qty <= 1 ? 'disabled' : '' ?>>-</button>
                             </form>
                             <span class="qty-value"><?= $qty ?></span>
-                            <form action="cart_action.php" method="POST" style="margin:0;">
+                            <form action="<?= BASE_URL ?>process/cart_action.php" method="POST" style="margin:0;">
                                 <input type="hidden" name="action" value="update">
                                 <input type="hidden" name="product_id" value="<?= (int) $p['id'] ?>">
                                 <input type="hidden" name="qty" value="<?= $qty + 1 ?>">
@@ -108,7 +108,7 @@ $totalBill = $totalOriginal - $promoDiscount + $serviceFee;
                         </div>
 
                         <!-- Remove form -->
-                        <form action="cart_action.php" method="POST" style="margin:0;">
+                        <form action="<?= BASE_URL ?>process/cart_action.php" method="POST" style="margin:0;">
                             <input type="hidden" name="action" value="remove">
                             <input type="hidden" name="product_id" value="<?= (int) $p['id'] ?>">
                             <input type="hidden" name="redirect_page" value="keranjang">

@@ -12,11 +12,11 @@
  * ============================================================
  */
 
-require_once __DIR__ . '/../db_connect.php';
+require_once dirname(__DIR__) . '/config/db_connect.php';
 
 // ── Auth guard ────────────────────────────────────────────────
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header('Location: login.php');
+    header('Location: ' . BASE_URL . 'login.php');
     exit;
 }
 
@@ -118,7 +118,7 @@ $totalWithoutBadge = count($allProducts) - $totalWithBadge;
         </div>
     </div>
     <!-- Bulk clear -->
-    <form action="product_action.php" method="POST"
+    <form action="<?= BASE_URL ?>process/product_action.php" method="POST"
           onsubmit="return confirm('Hapus SEMUA badge dari seluruh produk?')">
 
         <input type="hidden" name="action" value="clear_all_badges">
@@ -208,7 +208,7 @@ $totalWithoutBadge = count($allProducts) - $totalWithBadge;
                     <?php endif; ?>
                 </td>
                 <td style="text-align:center;padding-right:20px;">
-                    <form action="product_action.php" method="POST"
+                    <form action="<?= BASE_URL ?>process/product_action.php" method="POST"
                           class="promo-inline-form" id="promo-form-<?= $p['id'] ?>">
                         <input type="hidden" name="action" value="set_badge">
                         <input type="hidden" name="product_id" value="<?= $p['id'] ?>">
@@ -243,7 +243,7 @@ $totalWithoutBadge = count($allProducts) - $totalWithBadge;
 
 <?php if (empty($allProducts)): ?>
 <div style="text-align:center;padding:60px 20px;color:var(--color-text-light);">
-    <p>Belum ada produk. Silakan tambahkan produk terlebih dahulu melalui menu <a href="index.php?page=tambah-produk">Tambah Produk</a>.</p>
+    <p>Belum ada produk. Silakan tambahkan produk terlebih dahulu melalui menu <a href="admin.php?page=tambah-produk">Tambah Produk</a>.</p>
 </div>
 <?php endif; ?>
 
@@ -261,7 +261,7 @@ $totalWithoutBadge = count($allProducts) - $totalWithBadge;
 @keyframes flashSlide { from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);} }
 .prod-flash__icon{width:18px;height:18px;flex-shrink:0;}
 .prod-flash--success{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);color:#15803d;}
-.prod-flash--error  {background:rgba(184,56,44,.06);border:1px solid rgba(184,56,44,.25);color:#b8382c;}
+.prod-flash--error  {background:rgba(224,41,41,.06);border:1px solid rgba(224,41,41,.25);color:var(--accent-red);}
 
 /* Stat cards */
 .promo-stats {
@@ -270,8 +270,8 @@ $totalWithoutBadge = count($allProducts) - $totalWithBadge;
 }
 .promo-stat-card {
     display:flex;align-items:center;gap:14px;
-    background:#fff;border-radius:14px;padding:16px 20px;
-    border:1px solid #f0ece8;box-shadow:0 2px 8px rgba(0,0,0,0.05);
+    background:var(--bg-card);border-radius:14px;padding:16px 20px;
+    border:1px solid var(--border-color);box-shadow:0 2px 8px rgba(0,0,0,0.05);
     min-width:160px;
 }
 .promo-stat-card__icon {
@@ -279,24 +279,24 @@ $totalWithoutBadge = count($allProducts) - $totalWithBadge;
     display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
 .promo-stat-card__icon svg{width:20px;height:20px;}
-.promo-stat-card__icon--total{background:rgba(109,58,26,.08);color:#6D3A1A;}
+.promo-stat-card__icon--total{background:rgba(11, 45, 114,.08);color:var(--primary-blue);}
 .promo-stat-card__icon--none {background:rgba(156,163,175,.1);color:#6b7280;}
 .promo-stat-card__icon--all  {background:rgba(59,130,246,.1); color:#2563eb;}
-.promo-stat-card__val   {font-size:1.6rem;font-weight:800;color:#2d2d2d;line-height:1.1;}
-.promo-stat-card__label {font-size:0.75rem;color:#999;font-weight:500;}
+.promo-stat-card__val   {font-size:1.6rem;font-weight:800;color:var(--text-dark);line-height:1.1;}
+.promo-stat-card__label {font-size:0.75rem;color:var(--text-gray);font-weight:500;}
 
 /* Legend */
 .promo-legend {
     display:flex;align-items:center;gap:8px;flex-wrap:wrap;
-    padding:12px 16px;background:#faf8f6;border-radius:12px;
-    border:1px solid #f0ece8;margin-bottom:20px;
+    padding:12px 16px;background:var(--bg-main);border-radius:12px;
+    border:1px solid var(--border-color);margin-bottom:20px;
 }
-.promo-legend__title{font-size:0.78rem;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.04em;}
+.promo-legend__title{font-size:0.78rem;font-weight:700;color:var(--text-gray);text-transform:uppercase;letter-spacing:.04em;}
 .promo-legend__chip {
     display:inline-block;padding:3px 9px;border-radius:20px;
     font-size:0.7rem;font-weight:700;
-    background:rgba(109,58,26,.08);color:#6D3A1A;
-    border:1px solid rgba(109,58,26,.15);
+    background:rgba(11, 45, 114,.08);color:var(--primary-blue);
+    border:1px solid rgba(11, 45, 114,.15);
 }
 
 /* Section */
@@ -304,11 +304,11 @@ $totalWithoutBadge = count($allProducts) - $totalWithBadge;
 .promo-section__header{margin-bottom:10px;}
 .promo-section__title {
     display:flex;align-items:center;gap:10px;
-    font-size:1rem;font-weight:700;color:#2d2d2d;margin:0;
+    font-size:1rem;font-weight:700;color:var(--text-dark);margin:0;
 }
 .promo-section__count {
-    font-size:0.72rem;font-weight:500;color:#999;
-    background:#f5f3f0;padding:2px 8px;border-radius:20px;
+    font-size:0.72rem;font-weight:500;color:var(--text-gray);
+    background:var(--bg-main);padding:2px 8px;border-radius:20px;
 }
 
 /* Inline form */
@@ -324,16 +324,16 @@ $totalWithoutBadge = count($allProducts) - $totalWithBadge;
     border:1.5px solid transparent;text-decoration:none;
     transition:all 0.2s;white-space:nowrap;
 }
-.prod-btn--primary{background:linear-gradient(135deg,#6D3A1A,#4A2710);color:#fff;box-shadow:0 3px 10px rgba(109,58,26,.25);}
-.prod-btn--primary:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(109,58,26,.35);}
-.prod-btn--danger{background:#fff8f8;color:#b8382c;border-color:#fde8e8;}
-.prod-btn--danger:hover{background:#b8382c;color:#fff;border-color:#b8382c;}
+.prod-btn--primary{background:linear-gradient(135deg,var(--primary-blue),var(--primary-hover));color:#fff;box-shadow:0 3px 10px rgba(11, 45, 114,.25);}
+.prod-btn--primary:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(11, 45, 114,.35);}
+.prod-btn--danger{background:#fff8f8;color:var(--accent-red);border-color:#fde8e8;}
+.prod-btn--danger:hover{background:var(--accent-red);color:#fff;border-color:var(--accent-red);}
 
 .prod-toolbar__filter{
-    padding:9px 12px;border:1.5px solid #e8e4e0;border-radius:10px;
-    font-size:0.87rem;font-family:inherit;background:#f8f6f4;
-    outline:none;color:#2d2d2d;cursor:pointer;
+    padding:9px 12px;border:1.5px solid var(--border-color);border-radius:10px;
+    font-size:0.87rem;font-family:inherit;background:var(--bg-main);
+    outline:none;color:var(--text-dark);cursor:pointer;
 }
 
-.prod-table__row:hover{background:#faf8f6;}
+.prod-table__row:hover{background:var(--bg-main);}
 </style>

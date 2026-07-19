@@ -19,7 +19,7 @@
             </p>
         </div>
         <div class="about-hero__image-wrapper">
-            <img src="images/warung.webp" alt="Supermarket Staff" class="about-hero__image">
+            <img src="<?= BASE_URL ?>assets/images/warung.webp" alt="Supermarket Staff" class="about-hero__image">
         </div>
     </div>
 
@@ -107,7 +107,7 @@
         
         <div class="atmosphere-grid">
             <div class="atmosphere-grid__large">
-                <img src="images/1.webp" alt="Interior Utama" class="atmosphere-grid__img">
+                <img src="<?= BASE_URL ?>assets/images/1.webp" alt="Interior Utama" class="atmosphere-grid__img">
                 <div class="atmosphere-grid__label">
                     <h4>Interior Utama</h4>
                     <p>Modern &amp; Nyaman</p>
@@ -115,10 +115,10 @@
             </div>
             <div class="atmosphere-grid__small-stack">
                 <div class="atmosphere-grid__small-item">
-                    <img src="images/3.webp" alt="Rak Rempah" class="atmosphere-grid__img">
+                    <img src="<?= BASE_URL ?>assets/images/3.webp" alt="Rak Rempah" class="atmosphere-grid__img">
                 </div>
                 <div class="atmosphere-grid__small-item">
-                    <img src="images/2.webp" alt="Transaksi Kasir" class="atmosphere-grid__img">
+                    <img src="<?= BASE_URL ?>assets/images/2.webp" alt="Transaksi Kasir" class="atmosphere-grid__img">
                 </div>
             </div>
         </div>

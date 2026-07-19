@@ -11,16 +11,16 @@
  */
 
 session_start();
-require_once __DIR__ . '/config_xendit.php';
+require_once dirname(__DIR__) . '/config/config_xendit.php';
 
 // Auth Guard: ensure user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+    header('Location: ' . BASE_URL . 'login.php');
     exit;
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: index.php?page=beranda');
+    header('Location: ' . BASE_URL . 'index.php?page=beranda');
     exit;
 }
 
@@ -33,14 +33,14 @@ $customerName  = isset($_POST['customer_name']) ? trim($_POST['customer_name']) 
 // Validation checks
 if (empty($orderId) || $totalAmount <= 0 || empty($customerEmail) || empty($customerName)) {
     $_SESSION['cart_message'] = 'Informasi pembayaran tidak lengkap. Gagal memproses transaksi.';
-    header('Location: index.php?page=keranjang');
+    header('Location: ' . BASE_URL . 'index.php?page=keranjang');
     exit;
 }
 
 // Determine success redirect URL pointing to the user's order history
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
 $host = $_SERVER['HTTP_HOST'];
-$successRedirectUrl = $protocol . '://' . $host . '/e-warung/index.php?page=riwayat';
+$successRedirectUrl = BASE_URL . 'index.php?page=riwayat';
 
 // ── Construct Xendit Payload ────────────────────────────────
 $payload = [
@@ -83,7 +83,7 @@ curl_close($curl);
 if ($err) {
     error_log('Xendit Invoice Creation cURL Error: ' . $err);
     $_SESSION['cart_message'] = 'Gagal terhubung dengan server pembayaran. Coba lagi nanti.';
-    header('Location: index.php?page=pembayaran');
+    header('Location: ' . BASE_URL . 'index.php?page=pembayaran');
     exit;
 }
 
@@ -98,6 +98,6 @@ if (isset($responseDecoded['invoice_url'])) {
     // Log API response mismatch
     error_log('Xendit Invoice API Error response: ' . $response);
     $_SESSION['cart_message'] = 'Gagal membuat Invoice Pembayaran. Detail: ' . ($responseDecoded['message'] ?? 'Unknown Error');
-    header('Location: index.php?page=pembayaran');
+    header('Location: ' . BASE_URL . 'index.php?page=pembayaran');
     exit;
 }

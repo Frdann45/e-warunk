@@ -43,7 +43,7 @@ if ($viewTotalAmount > 0 && !empty($viewOrderId)):
     </div>
 
     <!-- Hidden checkout details submitted to processor -->
-    <form action="checkout_proses.php" method="POST" id="xendit-checkout-form">
+    <form action="process/checkout_proses.php" method="POST" id="xendit-checkout-form">
         <input type="hidden" name="order_id" value="<?= $viewOrderId ?>">
         <input type="hidden" name="total_amount" value="<?= $viewTotalAmount ?>">
         <input type="hidden" name="customer_email" value="<?= $viewCustomerEmail ?>">

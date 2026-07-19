@@ -60,7 +60,7 @@
     <!-- Split Section: Quality Card + Accordion FAQ Card -->
     <div class="guide-details-grid">
         <!-- Quality Card (Background Image) -->
-        <div class="quality-card" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.9)), url('images/1.webp');">
+        <div class="quality-card" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.9)), url('<?= BASE_URL ?>assets/images/1.webp');">
             <div class="quality-card__content">
                 <h2 class="quality-card__title">Kualitas Terjamin</h2>
                 <p class="quality-card__desc">Produk kami dipilih langsung dari produsen lokal untuk memastikan kesegaran setiap hari.</p>

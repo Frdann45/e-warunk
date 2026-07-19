@@ -10,7 +10,7 @@
  */
 
 session_start();
-require_once __DIR__ . '/db_connect.php';
+require_once dirname(__DIR__) . '/config/db_connect.php';
 
 // Auth guard
 if (!isset($_SESSION['user_id'])) {

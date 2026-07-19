@@ -30,9 +30,9 @@ $adminHeaderInitials = isset($_SESSION['name'])
     <div class="admin-header__inner">
 
         <!-- ── Brand / Logo ──────────────────────────────────── -->
-        <a href="admin.php" class="admin-header__brand" id="admin-brand-link">
+        <a href="<?= BASE_URL ?>admin/admin.php" class="admin-header__brand" id="admin-brand-link">
             <span class="admin-header__logo">
-                <img src="images/logo.png" alt="Logo Warung Tiga Saudara" onerror="this.style.display='none';">
+                <img src="<?= BASE_URL ?>assets/images/logo.png" alt="Logo Warung Tiga Saudara" onerror="this.style.display='none';">
             </span>
             <span class="admin-header__brand-text">Warung Tiga Saudara</span>
             <span class="admin-header__role-badge">Admin</span>
@@ -40,7 +40,7 @@ $adminHeaderInitials = isset($_SESSION['name'])
 
         <!-- ── Order ID Search ───────────────────────────────── -->
         <div class="admin-header__search-wrapper">
-            <form action="admin.php" method="GET" class="admin-header__search-form" id="admin-search-form">
+            <form action="<?= BASE_URL ?>admin/admin.php" method="GET" class="admin-header__search-form" id="admin-search-form">
                 <input type="hidden" name="page" value="semua-transaksi">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="admin-header__search-icon" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -60,7 +60,7 @@ $adminHeaderInitials = isset($_SESSION['name'])
         <div class="admin-header__actions">
 
             <!-- Kunjungi Toko Button -->
-            <a href="index.php" target="_blank" class="admin-header__visit-btn" id="btn-visit-store" title="Buka halaman toko">
+            <a href="<?= BASE_URL ?>index.php" target="_blank" class="admin-header__visit-btn" id="btn-visit-store" title="Buka halaman toko">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
                     <polyline points="15 3 21 3 21 9"/>
@@ -86,7 +86,7 @@ $adminHeaderInitials = isset($_SESSION['name'])
                     <div class="admin-profile-dropdown__divider"></div>
                     <ul class="admin-profile-dropdown__menu">
                         <li>
-                            <a href="logout.php" class="admin-profile-dropdown__item" id="admin-logout-btn">
+                            <a href="<?= BASE_URL ?>logout.php" class="admin-profile-dropdown__item" id="admin-logout-btn">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
                                     <polyline points="16 17 21 12 16 7"/>

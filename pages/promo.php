@@ -5,7 +5,7 @@
  * Author ID: 11240044
  * =======
  */
-require_once __DIR__ . '/../db_connect.php';
+require_once dirname(__DIR__) . '/config/db_connect.php';
 
 // Fetch promo items from DB
 try {
@@ -63,7 +63,7 @@ $originalPrices = [
 <div class="promo-container fade-in">
     
     <!-- Hero Banner Card -->
-    <div class="promo-hero" style="background-image: linear-gradient(135deg, rgba(109, 58, 26, 0.95), rgba(74, 39, 16, 0.8)), url('images/warung.webp');">
+    <div class="promo-hero" style="background-image: linear-gradient(135deg, rgba(11, 45, 114, 0.95), rgba(9, 146, 194, 0.8)), url('<?= BASE_URL ?>assets/images/warung.webp');">
         <div class="promo-hero__content">
             <span class="promo-hero__badge">PROMO BULAN INI</span>
             <h1 class="promo-hero__title">Gelar Diskon Sembako<br>Meriah</h1>
@@ -124,7 +124,7 @@ $originalPrices = [
                     </div>
                 </div>
                 <!-- Add Form -->
-                <form action="cart_action.php" method="POST" class="promo-card__form">
+                <form action="<?= BASE_URL ?>process/cart_action.php" method="POST" class="promo-card__form">
                     <input type="hidden" name="product_id" value="<?= (int)$p1['id'] ?>">
                     <input type="hidden" name="redirect_page" value="promo">
                     <button type="submit" class="promo-card__btn">Tambah ke Keranjang</button>
@@ -157,7 +157,7 @@ $originalPrices = [
                     </div>
                 </div>
                 <!-- Add Form -->
-                <form action="cart_action.php" method="POST" class="promo-card__form">
+                <form action="<?= BASE_URL ?>process/cart_action.php" method="POST" class="promo-card__form">
                     <input type="hidden" name="product_id" value="<?= (int)$p2['id'] ?>">
                     <input type="hidden" name="redirect_page" value="promo">
                     <button type="submit" class="promo-card__btn">Tambah ke Keranjang</button>
@@ -190,7 +190,7 @@ $originalPrices = [
                     </div>
                 </div>
                 <!-- Add Form -->
-                <form action="cart_action.php" method="POST" class="promo-card__form">
+                <form action="<?= BASE_URL ?>process/cart_action.php" method="POST" class="promo-card__form">
                     <input type="hidden" name="product_id" value="<?= (int)$p3['id'] ?>">
                     <input type="hidden" name="redirect_page" value="promo">
                     <button type="submit" class="promo-card__btn">Tambah ke Keranjang</button>
@@ -223,7 +223,7 @@ $originalPrices = [
                     </div>
                 </div>
                 <!-- Add Form -->
-                <form action="cart_action.php" method="POST" class="promo-card__form">
+                <form action="<?= BASE_URL ?>process/cart_action.php" method="POST" class="promo-card__form">
                     <input type="hidden" name="product_id" value="<?= (int)$p4['id'] ?>">
                     <input type="hidden" name="redirect_page" value="promo">
                     <button type="submit" class="promo-card__btn">Tambah ke Keranjang</button>
@@ -246,7 +246,7 @@ $originalPrices = [
                         <span class="promo-bundle-card__price-promo"><?= formatRupiah((float)$pkg['price']) ?></span>
                         <span class="promo-bundle-card__price-original"><?= formatRupiah($originalPrices['Paket Sembako Berkah']) ?></span>
                     </div>
-                    <form action="cart_action.php" method="POST" style="margin-top:15px;">
+                    <form action="<?= BASE_URL ?>process/cart_action.php" method="POST" style="margin-top:15px;">
                         <input type="hidden" name="product_id" value="<?= (int)$pkg['id'] ?>">
                         <input type="hidden" name="redirect_page" value="promo">
                         <button type="submit" class="promo-bundle-card__btn">Ambil Paket Sekarang</button>
@@ -268,7 +268,7 @@ $originalPrices = [
                 <li><span class="bullet-red"></span> Kayu Manis - Rp 8rb</li>
             </ul>
             <div class="promo-list-card__footer">
-                <img src="images/rempah-promo.svg" alt="Rempah Nusantara" class="promo-list-card__img">
+                <img src="<?= BASE_URL ?>assets/images/rempah-promo.svg" alt="Rempah Nusantara" class="promo-list-card__img">
                 <a href="index.php?page=rempah" class="promo-list-card__btn">Lihat Koleksi Rempah</a>
             </div>
         </div>
@@ -288,7 +288,7 @@ $originalPrices = [
                         <span class="promo-stack-card__price-promo"><?= formatRupiah((float)$pTeh['price']) ?></span>
                         <span class="promo-stack-card__price-original"><?= formatRupiah($originalPrices['Teh Celup Premium 25s']) ?></span>
                     </div>
-                    <form action="cart_action.php" method="POST" style="margin: 0;">
+                    <form action="<?= BASE_URL ?>process/cart_action.php" method="POST" style="margin: 0;">
                         <input type="hidden" name="product_id" value="<?= (int)$pTeh['id'] ?>">
                         <input type="hidden" name="redirect_page" value="promo">
                         <button type="submit" class="promo-stack-card__add-btn" title="Tambah ke Keranjang">
@@ -313,7 +313,7 @@ $originalPrices = [
                         <span class="promo-stack-card__price-promo"><?= formatRupiah((float)$pTepung['price']) ?></span>
                         <span class="promo-stack-card__price-original"><?= formatRupiah($originalPrices['Tepung Terigu Segitiga Biru 1kg']) ?></span>
                     </div>
-                    <form action="cart_action.php" method="POST" style="margin: 0;">
+                    <form action="<?= BASE_URL ?>process/cart_action.php" method="POST" style="margin: 0;">
                         <input type="hidden" name="product_id" value="<?= (int)$pTepung['id'] ?>">
                         <input type="hidden" name="redirect_page" value="promo">
                         <button type="submit" class="promo-stack-card__add-btn" title="Tambah ke Keranjang">

@@ -16,11 +16,11 @@
 session_start();
 
 // Include database connection
-require_once __DIR__ . '/db_connect.php';
+require_once __DIR__ . '/config/db_connect.php';
 
 // ── RBAC: Redirect admins to admin portal ───────────────────
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-    header('Location: admin.php');
+    header('Location: admin/admin.php');
     exit;
 }
 
@@ -91,8 +91,8 @@ $userStatus   = $isLoggedIn
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Warung Tiga Saudara — Pusat belanja serba ada untuk kebutuhan sehari-hari yang segar, andal, dan berkualitas tinggi.">
     <title>Warung Tiga Saudara — Toko Kelontong Online</title>
-    <link rel="stylesheet" href="style.css?v=<?= time() ?>">
-    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="stylesheet" href="assets/css/style.css?v=<?= time() ?>">
+    <link rel="icon" type="image/png" href="assets/images/logo.png">
 </head>
 <body>
 <div class="user-layout" id="user-layout">
@@ -100,7 +100,7 @@ $userStatus   = $isLoggedIn
     <!-- ═══════════════════════════════════════════════════════
          USER HEADER 
          ═══════════════════════════════════════════════════════ -->
-    <?php include __DIR__ . '/header_user.php'; ?>
+    <?php include __DIR__ . '/includes/header_user.php'; ?>
 
     <!-- ═══════════════════════════════════════════════════════
          MAIN CONTENT AREA — Full Width 
@@ -161,7 +161,7 @@ $userStatus   = $isLoggedIn
     <!-- ═══════════════════════════════════════════════════════
          FOOTER — 4-Column Alfagift-Style
          ═══════════════════════════════════════════════════════ -->
-    <?php include __DIR__ . '/footer.php'; ?>
+    <?php include __DIR__ . '/includes/footer.php'; ?>
 
 </div>
 

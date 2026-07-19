@@ -5,7 +5,7 @@
  * Author ID: 11240044
  * =======
  */
-require_once __DIR__ . '/../db_connect.php';
+require_once dirname(__DIR__) . '/config/db_connect.php';
 
 $searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
 
@@ -96,7 +96,7 @@ try {
                     </a>
                     <div class="product-card__footer" style="padding:0 12px 12px;">
                         <span class="product-card__price"><?= formatRupiah((float) $product['price']) ?></span>
-                        <form action="cart_action.php" method="POST" style="margin:0;">
+                        <form action="<?= BASE_URL ?>process/cart_action.php" method="POST" style="margin:0;">
                             <input type="hidden" name="action" value="add">
                             <input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>">
                             <input type="hidden" name="redirect_page" value="kesehatan<?= $searchQuery !== '' ? '&search=' . urlencode($searchQuery) : '' ?>">

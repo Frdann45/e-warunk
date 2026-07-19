@@ -12,7 +12,7 @@
  *               - Featured products grid (full-width)
  * ============================================================
  */
-require_once __DIR__ . '/../db_connect.php';
+require_once dirname(__DIR__) . '/config/db_connect.php';
 
 try {
     // Fetch the featured products including new categories
@@ -30,7 +30,7 @@ try {
      ═══════════════════════════════════════════════════════════ -->
 <section class="user-hero fade-in" id="hero-banner">
     <div class="user-hero__slider">
-        <img src="images/warung.webp" alt="Warung Tiga Saudara Storefront" class="user-hero__image">
+        <img src="<?= BASE_URL ?>assets/images/warung.webp" alt="Warung Tiga Saudara Storefront" class="user-hero__image">
         <div class="user-hero__overlay"></div>
         <div class="user-hero__content">
             <h1 class="user-hero__title">Selamat Datang di Warung Tiga Saudara</h1>
@@ -150,13 +150,13 @@ try {
     </div>
     <div class="gallery__grid">
         <div class="gallery__item fade-in">
-            <img src="images/1.webp" alt="Interior toko Warung Tiga Saudara">
+            <img src="<?= BASE_URL ?>assets/images/1.webp" alt="Interior toko Warung Tiga Saudara">
         </div>
         <div class="gallery__item fade-in">
-            <img src="images/2.webp" alt="Display produk segar">
+            <img src="<?= BASE_URL ?>assets/images/2.webp" alt="Display produk segar">
         </div>
         <div class="gallery__item fade-in">
-            <img src="images/3.webp" alt="Rak bumbu dan saus">
+            <img src="<?= BASE_URL ?>assets/images/3.webp" alt="Rak bumbu dan saus">
         </div>
     </div>
 </section>
@@ -204,7 +204,7 @@ try {
                     </a>
                     <div class="product-card__footer" style="padding:0 12px 12px;">
                         <span class="product-card__price"><?= formatRupiah((float) $product['price']) ?></span>
-                        <form action="cart_action.php" method="POST" style="margin:0;">
+                        <form action="<?= BASE_URL ?>process/cart_action.php" method="POST" style="margin:0;">
                             <input type="hidden" name="action" value="add">
                             <input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>">
                             <input type="hidden" name="redirect_page" value="beranda">

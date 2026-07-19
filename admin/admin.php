@@ -21,12 +21,12 @@ session_start();
 
 // ── Authorization: Admin Only ───────────────────────────────
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header('Location: index.php');
+    header('Location: ' . BASE_URL . 'index.php');
     exit;
 }
 
 // ── Database Connection ─────────────────────────────────────
-require_once __DIR__ . '/db_connect.php';
+require_once dirname(__DIR__) . '/config/db_connect.php';
 
 // ── Page Routing ────────────────────────────────────────────
 $page = isset($_GET['page']) ? $_GET['page'] : 'pesanan-masuk';
@@ -40,11 +40,11 @@ if (!in_array($page, $adminPages)) {
 // ── Handle Admin POST Actions early (before HTML output) ────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
     if ($page === 'pesanan-masuk') {
-        require_once __DIR__ . '/pages/pesanan_masuk.php';
+        require_once dirname(__DIR__) . '/pages/pesanan_masuk.php';
     } elseif ($page === 'proses-pengiriman') {
-        require_once __DIR__ . '/pages/proses_pengiriman.php';
+        require_once dirname(__DIR__) . '/pages/proses_pengiriman.php';
     } elseif ($page === 'semua-transaksi') {
-        require_once __DIR__ . '/pages/semua_transaksi.php';
+        require_once dirname(__DIR__) . '/pages/semua_transaksi.php';
     }
 }
 
@@ -68,42 +68,42 @@ function formatRupiah(float $price): string
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Panel Admin — E-WARUNG Warung Tiga Saudara">
     <title>Admin — E-WARUNG Warung Tiga Saudara</title>
-    <link rel="stylesheet" href="style.css?v=<?= time() ?>">
-    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css?v=<?= time() ?>">
+    <link rel="icon" type="image/png" href="<?= BASE_URL ?>assets/images/logo.png">
 </head>
 <body class="admin-body">
 <div class="admin-layout" id="admin-layout">
 
     <!-- ── ADMIN HEADER ──────────────────────────────────────── -->
-    <?php include __DIR__ . '/header_admin.php'; ?>
+    <?php include dirname(__DIR__) . '/includes/header_admin.php'; ?>
 
     <!-- ── BODY: SIDEBAR + MAIN CONTENT ──────────────────────── -->
     <div class="admin-body-inner">
 
         <!-- ── LEFT SIDEBAR ──────────────────────────────────── -->
-        <?php include __DIR__ . '/sidebar.php'; ?>
+        <?php include dirname(__DIR__) . '/includes/sidebar.php'; ?>
 
         <!-- ── MAIN CONTENT AREA ─────────────────────────────── -->
         <main class="admin-main" id="admin-main-content">
             <?php
             switch ($page) {
                 case 'pesanan-masuk':
-                    include __DIR__ . '/pages/pesanan_masuk.php';
+                    include dirname(__DIR__) . '/pages/pesanan_masuk.php';
                     break;
                 case 'proses-pengiriman':
-                    include __DIR__ . '/pages/proses_pengiriman.php';
+                    include dirname(__DIR__) . '/pages/proses_pengiriman.php';
                     break;
                 case 'semua-transaksi':
-                    include __DIR__ . '/pages/semua_transaksi.php';
+                    include dirname(__DIR__) . '/pages/semua_transaksi.php';
                     break;
                 case 'tambah-produk':
-                    include __DIR__ . '/pages/tambah_produk.php';
+                    include dirname(__DIR__) . '/pages/tambah_produk.php';
                     break;
                 case 'buat-promo':
-                    include __DIR__ . '/pages/buat_promo.php';
+                    include dirname(__DIR__) . '/pages/buat_promo.php';
                     break;
                 default:
-                    include __DIR__ . '/pages/pesanan_masuk.php';
+                    include dirname(__DIR__) . '/pages/pesanan_masuk.php';
                     break;
             }
             ?>

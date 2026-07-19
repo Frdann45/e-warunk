@@ -17,7 +17,7 @@
 session_start();
 
 // ── Database & Helpers ───────────────────────────────────────
-require_once __DIR__ . '/db_connect.php';
+require_once __DIR__ . '/config/db_connect.php';
 
 // ── Guard: require a valid product ID in the URL ─────────────
 if (!isset($_GET['id']) || !ctype_digit((string) $_GET['id'])) {
@@ -73,8 +73,8 @@ if (isset($_SESSION['cart_message'])) {
     <title>Produk Tidak Ditemukan — Warung Tiga Saudara</title>
     <meta name="description" content="Produk yang Anda cari tidak ditemukan di Warung Tiga Saudara.">
     <?php endif; ?>
-    <link rel="stylesheet" href="style.css?v=<?= time() ?>">
-    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="stylesheet" href="assets/css/style.css?v=<?= time() ?>">
+    <link rel="icon" type="image/png" href="assets/images/logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -611,7 +611,7 @@ if (isset($_SESSION['cart_message'])) {
 <body>
 <div class="user-layout dp-page" id="user-layout">
 
-    <?php include __DIR__ . '/header_user.php'; ?>
+    <?php include __DIR__ . '/includes/header_user.php'; ?>
 
     <main class="user-main" id="dp-main-content">
 
@@ -840,7 +840,7 @@ if (isset($_SESSION['cart_message'])) {
                 </button>
 
                 <!-- ══ Add-to-Cart Form ══════════════════════ -->
-                <form action="cart_action.php" method="POST"
+                <form action="<?= BASE_URL ?>process/cart_action.php" method="POST"
                       id="dp-cart-form" class="dp-cart-form"
                       aria-label="Tambah ke keranjang belanja">
 
@@ -1126,7 +1126,7 @@ function dpToggleDesc(btn) {
 
         var data = new FormData(form);
 
-        fetch('cart_action.php', {
+        fetch('process/cart_action.php', {
             method:      'POST',
             body:        data,
             redirect:    'manual'   /* do NOT follow the 302 redirect */

@@ -12,7 +12,7 @@
  *               - Shopee-style Order Cards (not table)
  * ============================================================
  */
-require_once __DIR__ . '/../db_connect.php';
+require_once dirname(__DIR__) . '/config/db_connect.php';
 
 // Handle order actions (Cancel or Complete)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {

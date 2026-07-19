@@ -74,7 +74,7 @@ if ($addressId > 0) {
 // ── Process the order ───────────────────────────────────────
 if (empty($cartItems)) {
     $_SESSION['cart_message'] = 'Keranjang kosong, gagal membuat pesanan.';
-    header('Location: index.php?page=sembako');
+    header('Location: ' . BASE_URL . 'index.php?page=sembako');
     exit;
 }
 
@@ -114,12 +114,12 @@ try {
         $pdo->commit();
         $_SESSION['cart'] = [];
         $_SESSION['cart_message'] = 'Pesanan Anda berhasil dibuat! Pembayaran akan dilakukan saat kurir tiba.';
-        header('Location: index.php?page=riwayat');
+        header('Location: ' . BASE_URL . 'index.php?page=riwayat');
         exit;
     }
     
     // ── Xendit Integration for Digital Payments ────────────────
-    require_once __DIR__ . '/../config_xendit.php';
+    require_once dirname(__DIR__) . '/config/config_xendit.php';
     
     // Determine allowed payment channels
     $xenditMethods = [];
@@ -205,6 +205,6 @@ try {
     }
     error_log('Order submission error: ' . $e->getMessage());
     $_SESSION['cart_message'] = 'Gagal memproses transaksi: ' . $e->getMessage();
-    header('Location: index.php?page=pembayaran');
+    header('Location: ' . BASE_URL . 'index.php?page=pembayaran');
     exit;
 }

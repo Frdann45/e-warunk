@@ -5,12 +5,12 @@
  * Author ID: 11240044
  * =======
  */
-require_once __DIR__ . '/../db_connect.php';
+require_once dirname(__DIR__) . '/config/db_connect.php';
 
 // ── Auth guard ────────────────────────────────────────────
 if (!isset($_SESSION['user_id'])) {
     $_SESSION['login_required_message'] = 'Silakan login terlebih dahulu untuk melanjutkan ke pembayaran.';
-    header('Location: login.php');
+    header('Location: ' . BASE_URL . 'login.php');
     exit;
 }
 $userId = (int) $_SESSION['user_id'];
@@ -203,11 +203,11 @@ $totalBill        = $totalOriginal + $shippingFee - $shippingDiscount;
                                 </div>
                                 <div class="payment-method-box__description">Transfer bank otomatis dengan nomor rekening unik.</div>
                                 <div class="payment-logo-row">
-                                    <img src="images/logo-bca.png" alt="BCA" class="payment-brand-logo">
-                                    <img src="images/logo-mandiri.jpg" alt="Mandiri" class="payment-brand-logo">
-                                    <img src="images/logo-bni.jpg" alt="BNI" class="payment-brand-logo">
-                                    <img src="images/logo-bri.jpg" alt="BRI" class="payment-brand-logo">
-                                    <img src="images/logo-permata.jpg" alt="Permata" class="payment-brand-logo">
+                                    <img src="<?= BASE_URL ?>assets/images/logo-bca.png" alt="BCA" class="payment-brand-logo">
+                                    <img src="<?= BASE_URL ?>assets/images/logo-mandiri.jpg" alt="Mandiri" class="payment-brand-logo">
+                                    <img src="<?= BASE_URL ?>assets/images/logo-bni.jpg" alt="BNI" class="payment-brand-logo">
+                                    <img src="<?= BASE_URL ?>assets/images/logo-bri.jpg" alt="BRI" class="payment-brand-logo">
+                                    <img src="<?= BASE_URL ?>assets/images/logo-permata.jpg" alt="Permata" class="payment-brand-logo">
                                 </div>
                                 <span class="payment-method-box__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
                             </div>
@@ -224,11 +224,11 @@ $totalBill        = $totalOriginal + $shippingFee - $shippingDiscount;
                                 </div>
                                 <div class="payment-method-box__description">Bayar praktis lewat aplikasi HP Anda secara instan.</div>
                                 <div class="payment-logo-row">
-                                    <img src="images/logo-gopay.jpg" alt="GoPay" class="payment-brand-logo">
-                                    <img src="images/logo-ovo.jpg" alt="OVO" class="payment-brand-logo">
-                                    <img src="images/logo-dana.jpg" alt="DANA" class="payment-brand-logo">
-                                    <img src="images/logo-shopeepay.jpg" alt="ShopeePay" class="payment-brand-logo">
-                                    <img src="images/logo-linkaja.jpg" alt="LinkAja" class="payment-brand-logo">
+                                    <img src="<?= BASE_URL ?>assets/images/logo-gopay.jpg" alt="GoPay" class="payment-brand-logo">
+                                    <img src="<?= BASE_URL ?>assets/images/logo-ovo.jpg" alt="OVO" class="payment-brand-logo">
+                                    <img src="<?= BASE_URL ?>assets/images/logo-dana.jpg" alt="DANA" class="payment-brand-logo">
+                                    <img src="<?= BASE_URL ?>assets/images/logo-shopeepay.jpg" alt="ShopeePay" class="payment-brand-logo">
+                                    <img src="<?= BASE_URL ?>assets/images/logo-linkaja.jpg" alt="LinkAja" class="payment-brand-logo">
                                 </div>
                                 <span class="payment-method-box__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
                             </div>
@@ -250,7 +250,7 @@ $totalBill        = $totalOriginal + $shippingFee - $shippingDiscount;
                                 </div>
                                 <div class="payment-method-box__description">Scan satu kode QR melalui aplikasi m-banking atau e-wallet apa saja.</div>
                                 <div class="payment-logo-row payment-logo-row--center">
-                                    <img src="images/logo-qris.jpg" alt="QRIS" class="payment-brand-logo payment-brand-logo--large">
+                                    <img src="<?= BASE_URL ?>assets/images/logo-qris.jpg" alt="QRIS" class="payment-brand-logo payment-brand-logo--large">
                                 </div>
                                 <span class="payment-method-box__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
                             </div>
@@ -360,7 +360,7 @@ $totalBill        = $totalOriginal + $shippingFee - $shippingDiscount;
                     </div>
                     <div class="addr-item__actions">
                         <?php if (!$addr['is_primary']): ?>
-                        <form action="address_action.php" method="POST" style="display:inline;">
+                        <form action="<?= BASE_URL ?>process/address_action.php" method="POST" style="display:inline;">
                             <input type="hidden" name="action" value="set_primary">
                             <input type="hidden" name="address_id" value="<?= $addr['id'] ?>">
                             <button type="submit" class="addr-btn addr-btn--primary-set">Jadikan Utama</button>
@@ -378,7 +378,7 @@ $totalBill        = $totalOriginal + $shippingFee - $shippingDiscount;
                             Edit
                         </button>
                         <?php if (count($addresses) > 1): ?>
-                        <form action="address_action.php" method="POST" style="display:inline;"
+                        <form action="<?= BASE_URL ?>process/address_action.php" method="POST" style="display:inline;"
                             onsubmit="return confirm('Hapus alamat ini?')">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="address_id" value="<?= $addr['id'] ?>">
@@ -402,7 +402,7 @@ $totalBill        = $totalOriginal + $shippingFee - $shippingDiscount;
             </div>
 
             <!-- Add / Edit form (hidden by default) -->
-            <form action="address_action.php" method="POST" class="addr-form" id="addr-form" style="display:none;">
+            <form action="<?= BASE_URL ?>process/address_action.php" method="POST" class="addr-form" id="addr-form" style="display:none;">
                 <input type="hidden" name="action" value="add" id="addr-form-action">
                 <input type="hidden" name="address_id" value="" id="addr-form-id">
 
@@ -508,7 +508,7 @@ $totalBill        = $totalOriginal + $shippingFee - $shippingDiscount;
     gap: 10px;
     font-size: 1.05rem;
     font-weight: 700;
-    color: #4A2710;
+    color: var(--color-primary-dark);
     margin: 0;
 }
 .addr-modal__close {
@@ -522,7 +522,7 @@ $totalBill        = $totalOriginal + $shippingFee - $shippingDiscount;
     border-radius: 8px;
     transition: background 0.2s, color 0.2s;
 }
-.addr-modal__close:hover { background: #f5f3f0; color: #4A2710; }
+.addr-modal__close:hover { background: var(--color-bg); color: var(--color-primary-dark); }
 .addr-modal__body {
     overflow-y: auto;
     padding: 20px 24px 24px;
@@ -532,7 +532,7 @@ $totalBill        = $totalOriginal + $shippingFee - $shippingDiscount;
 /* Address list items */
 .addr-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
 .addr-item {
-    border: 1.5px solid #e8e4e0;
+    border: 1.5px solid var(--color-border);
     border-radius: 12px;
     padding: 14px 16px;
     display: flex;
@@ -542,19 +542,19 @@ $totalBill        = $totalOriginal + $shippingFee - $shippingDiscount;
     transition: border-color 0.2s, background 0.2s;
 }
 .addr-item--primary {
-    border-color: #6D3A1A;
-    background: rgba(109,58,26,0.03);
+    border-color: var(--color-primary);
+    background: rgba(11, 45, 114, 0.03);
 }
 .addr-item__info { flex: 1; min-width: 0; }
 .addr-item__name-row { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
-.addr-item__name { font-size: 0.92rem; font-weight: 700; color: #2d2d2d; }
+.addr-item__name { font-size: 0.92rem; font-weight: 700; color: var(--color-text-primary); }
 .addr-item__badge {
     font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em;
-    background: #6D3A1A; color: #fff;
+    background: var(--color-primary); color: #fff;
     padding: 2px 8px; border-radius: 20px;
 }
-.addr-item__phone { font-size: 0.82rem; color: #6b6b6b; margin-bottom: 4px; }
-.addr-item__addr { font-size: 0.82rem; color: #6b6b6b; line-height: 1.5; }
+.addr-item__phone { font-size: 0.82rem; color: var(--color-text-secondary); margin-bottom: 4px; }
+.addr-item__addr { font-size: 0.82rem; color: var(--color-text-secondary); line-height: 1.5; }
 .addr-item__actions { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
 
 /* Buttons */
@@ -563,50 +563,50 @@ $totalBill        = $totalOriginal + $shippingFee - $shippingDiscount;
     padding: 5px 12px; border-radius: 8px; border: 1.5px solid transparent;
     cursor: pointer; transition: all 0.2s; white-space: nowrap;
 }
-.addr-btn--primary-set { border-color: #6D3A1A; color: #6D3A1A; background: transparent; }
-.addr-btn--primary-set:hover { background: #6D3A1A; color: #fff; }
-.addr-btn--edit { border-color: #e8e4e0; color: #4a4a4a; background: #f8f6f4; }
-.addr-btn--edit:hover { border-color: #6D3A1A; color: #6D3A1A; }
-.addr-btn--delete { border-color: #fde8e8; color: #b8382c; background: #fff8f8; }
-.addr-btn--delete:hover { background: #b8382c; color: #fff; border-color: #b8382c; }
-.addr-btn--cancel { border-color: #e8e4e0; color: #6b6b6b; background: #f8f6f4; padding: 9px 20px; font-size: 0.85rem; }
-.addr-btn--cancel:hover { background: #e8e4e0; }
+.addr-btn--primary-set { border-color: var(--color-primary); color: var(--color-primary); background: transparent; }
+.addr-btn--primary-set:hover { background: var(--color-primary); color: #fff; }
+.addr-btn--edit { border-color: var(--color-border); color: var(--color-text-secondary); background: var(--color-bg); }
+.addr-btn--edit:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.addr-btn--delete { border-color: #fde8e8; color: var(--color-accent-red); background: #fff8f8; }
+.addr-btn--delete:hover { background: var(--color-accent-red); color: #fff; border-color: var(--color-accent-red); }
+.addr-btn--cancel { border-color: var(--color-border); color: var(--color-text-secondary); background: var(--color-bg); padding: 9px 20px; font-size: 0.85rem; }
+.addr-btn--cancel:hover { background: var(--color-border); }
 .addr-btn--save {
-    border-color: transparent; background: linear-gradient(135deg, #6D3A1A, #4A2710);
+    border-color: transparent; background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
     color: #fff; padding: 9px 20px; font-size: 0.85rem;
-    box-shadow: 0 3px 10px rgba(109,58,26,0.25);
+    box-shadow: 0 3px 10px rgba(11, 45, 114, 0.25);
 }
-.addr-btn--save:hover { background: linear-gradient(135deg, #5A2F15, #4A2710); transform: translateY(-1px); }
+.addr-btn--save:hover { background: linear-gradient(135deg, var(--color-primary-hover), var(--color-primary-dark)); transform: translateY(-1px); }
 
 /* Toggle button */
 .addr-form-toggle { margin-bottom: 4px; }
 .addr-btn-add-toggle {
     display: inline-flex; align-items: center; gap: 7px;
-    font-size: 0.85rem; font-weight: 600; color: #6D3A1A;
-    background: none; border: 1.5px dashed rgba(109,58,26,0.35);
+    font-size: 0.85rem; font-weight: 600; color: var(--color-primary);
+    background: none; border: 1.5px dashed rgba(11, 45, 114, 0.35);
     border-radius: 10px; padding: 9px 16px; cursor: pointer;
     transition: all 0.2s; width: 100%; justify-content: center;
 }
-.addr-btn-add-toggle:hover { background: rgba(109,58,26,0.04); border-color: #6D3A1A; }
+.addr-btn-add-toggle:hover { background: rgba(11, 45, 114, 0.04); border-color: var(--color-primary); }
 
 /* Form */
 .addr-form { margin-top: 16px; }
-.addr-form__title { font-size: 0.95rem; font-weight: 700; color: #2d2d2d; margin-bottom: 16px; }
+.addr-form__title { font-size: 0.95rem; font-weight: 700; color: var(--color-text-primary); margin-bottom: 16px; }
 .addr-form__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .addr-form__field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
 .addr-form__label { font-size: 0.72rem; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 0.05em; }
 .addr-form__input {
-    padding: 10px 12px; border: 1.5px solid #e8e4e0; border-radius: 10px;
-    font-size: 0.88rem; font-family: inherit; color: #2d2d2d;
-    background: #f8f6f4; outline: none; transition: all 0.2s;
+    padding: 10px 12px; border: 1.5px solid var(--color-border); border-radius: 10px;
+    font-size: 0.88rem; font-family: inherit; color: var(--color-text-primary);
+    background: var(--color-bg); outline: none; transition: all 0.2s;
 }
-.addr-form__input:focus { border-color: #8B5E3C; background: #fff; box-shadow: 0 0 0 3px rgba(109,58,26,0.08); }
+.addr-form__input:focus { border-color: var(--color-primary-light); background: #fff; box-shadow: 0 0 0 3px rgba(11, 45, 114, 0.08); }
 .addr-form__textarea { resize: vertical; min-height: 80px; }
 .addr-form__checkbox-label {
     display: flex; align-items: center; gap: 8px;
-    font-size: 0.85rem; color: #4a4a4a; cursor: pointer; margin-bottom: 16px;
+    font-size: 0.85rem; color: var(--color-text-secondary); cursor: pointer; margin-bottom: 16px;
 }
-.addr-form__checkbox-label input { accent-color: #6D3A1A; width: 15px; height: 15px; cursor: pointer; }
+.addr-form__checkbox-label input { accent-color: var(--color-primary); width: 15px; height: 15px; cursor: pointer; }
 .addr-form__actions { display: flex; gap: 10px; justify-content: flex-end; }
 
 @media (max-width: 540px) {

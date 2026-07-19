@@ -13,7 +13,7 @@
  */
 
 session_start();
-require_once __DIR__ . '/db_connect.php';
+require_once dirname(__DIR__) . '/config/db_connect.php';
 
 // ── Auth guard ────────────────────────────────────────────────
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
@@ -23,7 +23,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
 // ── Only handle POST ──────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: admin.php');
+    header('Location: ' . BASE_URL . 'admin/admin.php');
     exit;
 }
 
@@ -95,7 +95,7 @@ if ($action === 'add') {
     } catch (RuntimeException $e) {
         $_SESSION['prod_flash']      = $e->getMessage();
         $_SESSION['prod_flash_type'] = 'error';
-        header('Location: admin.php?page=tambah-produk');
+        header('Location: ' . BASE_URL . 'admin/admin.php?page=tambah-produk');
         exit;
     }
     $image_url = $uploadedPath ?? (trim($_POST['image_url'] ?? '') ?: 'images/logo.png');
@@ -119,7 +119,7 @@ if ($action === 'add') {
 
     $_SESSION['prod_flash']      = $flashMsg;
     $_SESSION['prod_flash_type'] = $flashType;
-    header('Location: admin.php?page=tambah-produk');
+    header('Location: ' . BASE_URL . 'admin/admin.php?page=tambah-produk');
     exit;
 }
 
@@ -138,7 +138,7 @@ elseif ($action === 'update') {
     } catch (RuntimeException $e) {
         $_SESSION['prod_flash']      = $e->getMessage();
         $_SESSION['prod_flash_type'] = 'error';
-        header('Location: admin.php?page=tambah-produk&edit=' . $id);
+        header('Location: ' . BASE_URL . 'admin/admin.php?page=tambah-produk&edit=' . $id);
         exit;
     }
 
@@ -174,7 +174,7 @@ elseif ($action === 'update') {
 
     $_SESSION['prod_flash']      = $flashMsg;
     $_SESSION['prod_flash_type'] = $flashType;
-    header('Location: admin.php?page=tambah-produk');
+    header('Location: ' . BASE_URL . 'admin/admin.php?page=tambah-produk');
     exit;
 }
 
@@ -198,7 +198,7 @@ elseif ($action === 'delete') {
 
     $_SESSION['prod_flash']      = $flashMsg;
     $_SESSION['prod_flash_type'] = $flashType;
-    header('Location: admin.php?page=tambah-produk');
+    header('Location: ' . BASE_URL . 'admin/admin.php?page=tambah-produk');
     exit;
 }
 
@@ -232,7 +232,7 @@ elseif ($action === 'set_badge') {
 
     $_SESSION['promo_flash']      = $flashMsg;
     $_SESSION['promo_flash_type'] = $flashType;
-    header('Location: admin.php?page=buat-promo');
+    header('Location: ' . BASE_URL . 'admin/admin.php?page=buat-promo');
     exit;
 }
 
@@ -256,7 +256,7 @@ elseif ($action === 'remove_badge') {
 
     $_SESSION['promo_flash']      = $flashMsg;
     $_SESSION['promo_flash_type'] = $flashType;
-    header('Location: admin.php?page=buat-promo');
+    header('Location: ' . BASE_URL . 'admin/admin.php?page=buat-promo');
     exit;
 }
 
@@ -273,7 +273,7 @@ elseif ($action === 'clear_all_badges') {
 
     $_SESSION['promo_flash']      = $flashMsg;
     $_SESSION['promo_flash_type'] = $flashType;
-    header('Location: admin.php?page=buat-promo');
+    header('Location: ' . BASE_URL . 'admin/admin.php?page=buat-promo');
     exit;
 }
 

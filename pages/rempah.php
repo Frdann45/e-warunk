@@ -5,7 +5,7 @@
  * Author ID: 11240044
  * =======
  */
-require_once __DIR__ . '/../db_connect.php';
+require_once dirname(__DIR__) . '/config/db_connect.php';
 
 // Fetch products in Rempah-rempah category
 $searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
@@ -126,7 +126,7 @@ try {
                         <span class="product-card__price"><?= formatRupiah((float) $product['price']) ?></span>
                         <span class="product-card__unit-label">/ <?= htmlspecialchars(explode(' / ', $product['unit_desc'])[0]) ?></span>
                     </div>
-                    <form action="cart_action.php" method="POST" style="margin:0;">
+                    <form action="<?= BASE_URL ?>process/cart_action.php" method="POST" style="margin:0;">
                         <input type="hidden" name="action" value="add">
                         <input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>">
                         <input type="hidden" name="redirect_page" value="rempah<?= $searchQuery !== '' ? '&search=' . urlencode($searchQuery) : '' ?>">

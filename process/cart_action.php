@@ -11,13 +11,14 @@
  */
 
 session_start();
+require_once dirname(__DIR__) . '/config/db_connect.php';
 
 // ── Auth Guard ────────────────────────────────────────────
 // Semua aksi keranjang membutuhkan login.
 // Jika belum login, simpan pesan & arahkan ke halaman login.
 if (!isset($_SESSION['user_id'])) {
     $_SESSION['login_required_message'] = 'Silakan login terlebih dahulu untuk menambahkan produk ke keranjang.';
-    header('Location: login.php');
+    header('Location: ' . BASE_URL . 'login.php');
     exit;
 }
 // ─────────────────────────────────────────────────────────
@@ -98,5 +99,5 @@ if ($redirectPage !== '') {
     $redirectUrl .= '?' . implode('&', $params);
 }
 
-header('Location: ' . $redirectUrl);
+header('Location: ' . BASE_URL . $redirectUrl);
 exit;

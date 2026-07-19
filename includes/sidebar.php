@@ -68,7 +68,7 @@ if ($isAdmin && isset($pdo)) {
         <ul class="sidebar__menu-list">
             <!-- Tambah Produk -->
             <li>
-                <a href="admin.php?page=tambah-produk"
+                <a href="<?= BASE_URL ?>admin/admin.php?page=tambah-produk"
                    class="sidebar__nav-item <?= $sidebarPage === 'tambah-produk' ? 'sidebar__nav-item--active' : '' ?>"
                    id="nav-tambah-produk">
                     <span class="sidebar__nav-icon">
@@ -85,7 +85,7 @@ if ($isAdmin && isset($pdo)) {
 
             <!-- Buat Promo -->
             <li>
-                <a href="admin.php?page=buat-promo"
+                <a href="<?= BASE_URL ?>admin/admin.php?page=buat-promo"
                    class="sidebar__nav-item <?= $sidebarPage === 'buat-promo' ? 'sidebar__nav-item--active' : '' ?>"
                    id="nav-buat-promo">
                     <span class="sidebar__nav-icon">
@@ -111,7 +111,7 @@ if ($isAdmin && isset($pdo)) {
         <ul class="sidebar__menu-list">
             <!-- Pesanan Masuk (with dynamic badge) -->
             <li>
-                <a href="admin.php?page=pesanan-masuk"
+                <a href="<?= BASE_URL ?>admin/admin.php?page=pesanan-masuk"
                    class="sidebar__nav-item <?= $sidebarPage === 'pesanan-masuk' ? 'sidebar__nav-item--active' : '' ?>"
                    id="nav-pesanan-masuk">
                     <span class="sidebar__nav-icon">
@@ -131,7 +131,7 @@ if ($isAdmin && isset($pdo)) {
 
             <!-- Proses Pengiriman -->
             <li>
-                <a href="admin.php?page=proses-pengiriman"
+                <a href="<?= BASE_URL ?>admin/admin.php?page=proses-pengiriman"
                    class="sidebar__nav-item <?= $sidebarPage === 'proses-pengiriman' ? 'sidebar__nav-item--active' : '' ?>"
                    id="nav-proses-pengiriman">
                     <span class="sidebar__nav-icon">
@@ -149,7 +149,7 @@ if ($isAdmin && isset($pdo)) {
 
             <!-- Semua Transaksi -->
             <li>
-                <a href="admin.php?page=semua-transaksi"
+                <a href="<?= BASE_URL ?>admin/admin.php?page=semua-transaksi"
                    class="sidebar__nav-item <?= $sidebarPage === 'semua-transaksi' ? 'sidebar__nav-item--active' : '' ?>"
                    id="nav-semua-transaksi">
                     <span class="sidebar__nav-icon">
@@ -184,7 +184,7 @@ if ($isAdmin && isset($pdo)) {
                 if ($session_role === 'admin') {
                     // Admin: link to system manual
                     echo '<li>';
-                    echo '<a href="help_admin.php" class="sidebar__nav-item" id="nav-bantuan">';
+                    echo '<a href="<?= BASE_URL ?>help_admin.php" class="sidebar__nav-item" id="nav-bantuan">';
                     echo '<span class="sidebar__nav-icon"><i class="icon-help" aria-hidden="true">';
                     echo '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">';
                     echo '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>';
@@ -215,7 +215,7 @@ if ($isAdmin && isset($pdo)) {
 
                 <!-- Keluar / Logout -->
                 <li>
-                    <a href="logout.php" class="sidebar__nav-item" id="nav-keluar">
+                    <a href="<?= BASE_URL ?>logout.php" class="sidebar__nav-item" id="nav-keluar">
                         <span class="sidebar__nav-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                  stroke-linecap="round" stroke-linejoin="round">

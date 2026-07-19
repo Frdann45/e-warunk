@@ -23,263 +23,8 @@
 <!-- ═══════════════════════════════════════════════════════════
      MAIN FOOTER — 4-Column Alfagift-Style
      ═══════════════════════════════════════════════════════════ -->
-<style>
-/* ── Outer Shell ──────────────────────────────────────────────── */
-.main-footer {
-    background-color: #1A1A1A;
-    border-top: 1px solid #2D2D2D;
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont,
-                 'Segoe UI', sans-serif;
-    color: #CCCCCC;
-    font-size: 0.875rem;
-    line-height: 1.65;
-}
+<!-- Inline styles migrated to style.css -->
 
-/* ── Grid Container ───────────────────────────────────────────── */
-.main-footer__grid {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 52px 24px 36px;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 40px 32px;
-}
-
-/* ── Column Headings ──────────────────────────────────────────── */
-.main-footer__col h4 {
-    font-size: 0.8125rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: #FFFFFF;
-    margin: 0 0 14px;
-    padding-bottom: 8px;
-    border-bottom: 2px solid #8B5E3C;
-    display: inline-block;
-}
-
-/* Second h4 inside same column (Layanan Pengiriman & Hubungi Kami) */
-.main-footer__col h4.footer-sub-heading {
-    margin-top: 24px;
-}
-
-/* ── Link Lists ───────────────────────────────────────────────── */
-.main-footer__links {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.main-footer__links li {
-    margin-bottom: 8px;
-}
-
-.main-footer__links a {
-    text-decoration: none;
-    color: #A8A8A8;
-    font-weight: 400;
-    transition: color 0.2s ease, padding-left 0.2s ease;
-    display: inline-block;
-}
-
-.main-footer__links a:hover {
-    color: #E8C7A8;
-    padding-left: 4px;
-}
-
-/* ── Payment Badge Row ────────────────────────────────────────── */
-.footer-payment-badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    align-items: center;
-    margin-top: 2px;
-}
-
-.footer-payment-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 5px 10px;
-    background: #FFFFFF;
-    border: 1px solid #D9D0C8;
-    border-radius: 6px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: #3A3330;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    white-space: nowrap;
-}
-
-/* Payment-specific accent colours */
-.footer-payment-badge--cod     { border-color: #2D9B4E; color: #2D9B4E; }
-.footer-payment-badge--bca     { border-color: #005BAA; color: #005BAA; }
-.footer-payment-badge--mandiri { border-color: #003D7A; color: #003D7A; }
-
-.footer-payment-badge svg {
-    flex-shrink: 0;
-}
-
-/* ── Delivery Row ─────────────────────────────────────────────── */
-.footer-delivery-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px;
-    margin-top: 2px;
-}
-
-.footer-delivery-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    background: #2D2D2D;
-    border: 1px solid #4A2710;
-    border-radius: 8px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #E8C7A8;
-}
-
-/* ── Social Icons ─────────────────────────────────────────────── */
-.footer-social-row {
-    display: flex;
-    gap: 10px;
-    margin-top: 2px;
-}
-
-.footer-social-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    text-decoration: none;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
-}
-
-.footer-social-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
-}
-
-.footer-social-btn--fb { background: #1877F2; }
-.footer-social-btn--tw { background: #1DA1F2; }
-.footer-social-btn--ig {
-    background: radial-gradient(circle at 30% 107%,
-        #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
-}
-
-/* ── Contact List ─────────────────────────────────────────────── */
-.footer-contact-list {
-    list-style: none;
-    margin: 4px 0 0;
-    padding: 0;
-}
-
-.footer-contact-list li {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    margin-bottom: 10px;
-    color: #A8A8A8;
-    font-size: 0.845rem;
-}
-
-.footer-contact-list li svg {
-    flex-shrink: 0;
-    margin-top: 2px;
-    color: #8B5E3C;
-}
-
-.footer-contact-list a {
-    text-decoration: none;
-    color: inherit;
-    transition: color 0.2s ease;
-}
-
-.footer-contact-list a:hover {
-    color: #E8C7A8;
-}
-
-/* ── Divider ──────────────────────────────────────────────────── */
-.main-footer__divider {
-    max-width: 1200px;
-    margin: 0 auto;
-    border: none;
-    border-top: 1px solid #2D2D2D;
-}
-
-/* ── Copyright Bar ────────────────────────────────────────────── */
-.main-footer__bottom {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 18px 24px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.main-footer__copyright {
-    font-size: 0.8rem;
-    color: #888888;
-    text-align: center;
-    flex: 1;
-    margin: 0;
-}
-
-.main-footer__copyright strong {
-    color: #E8C7A8;
-    font-weight: 600;
-}
-
-.main-footer__author-tag {
-    font-size: 0.72rem;
-    color: #555555;
-    letter-spacing: 0.04em;
-}
-
-/* ── Responsive: Tablet (≤ 900px → 2 columns) ────────────────── */
-@media (max-width: 900px) {
-    .main-footer__grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 36px 28px;
-    }
-}
-
-/* ── Responsive: Mobile (≤ 768px → 1 column, stacked) ────────── */
-@media (max-width: 768px) {
-    .main-footer__grid {
-        grid-template-columns: 1fr;
-        padding: 36px 20px 24px;
-        gap: 28px;
-    }
-
-    .main-footer__col h4 {
-        font-size: 0.875rem;
-    }
-
-    .main-footer__bottom {
-        flex-direction: column;
-        text-align: center;
-        padding: 16px 20px 20px;
-        gap: 6px;
-    }
-
-    .main-footer__author-tag {
-        order: 1;
-    }
-
-    .main-footer__copyright {
-        order: 2;
-    }
-}
-</style>
 
 <footer class="main-footer" id="main-footer" role="contentinfo">
 
@@ -293,12 +38,12 @@
             <h4>Layanan Pelanggan</h4>
             <ul class="main-footer__links" aria-label="Layanan Pelanggan">
                 <li>
-                    <a href="index.php?page=panduan" id="footer-link-panduan">
+                    <a href="<?= BASE_URL ?>index.php?page=panduan" id="footer-link-panduan">
                         Panduan Belanja
                     </a>
                 </li>
                 <li>
-                    <a href="index.php?page=promo" id="footer-link-promo">
+                    <a href="<?= BASE_URL ?>index.php?page=promo" id="footer-link-promo">
                         Promo Bulanan
                     </a>
                 </li>
@@ -312,13 +57,13 @@
             <h4>Jelajahi e-warung</h4>
             <ul class="main-footer__links" aria-label="Jelajahi e-warung">
                 <li>
-                    <a href="index.php?page=tentang" id="footer-link-tentang">
+                    <a href="<?= BASE_URL ?>index.php?page=tentang" id="footer-link-tentang">
                         Tentang Kami
                     </a>
                 </li>
                 <li>
-                    <a href="index.php?page=kontak" id="footer-link-kontak">
-                        Kontak
+                    <a href="<?= BASE_URL ?>index.php?page=kontak" id="footer-link-kontak">
+                        Hubungi Kami
                     </a>
                 </li>
             </ul>
@@ -484,11 +229,10 @@
 
     <!-- ── Copyright Bar ──────────────────────────────────────── -->
     <div class="main-footer__bottom">
-        <span class="main-footer__author-tag" aria-hidden="true">ID: 11240044</span>
         <p class="main-footer__copyright">
             &copy; 2026 <strong>Warung Tiga Saudara</strong>. All rights reserved.
         </p>
-        <span class="main-footer__author-tag" aria-hidden="true">e-warung&nbsp;v1.0</span>
+        <span class="main-footer__author-tag" aria-hidden="true">e-warung&nbsp;v2.0</span>
     </div><!-- /.main-footer__bottom -->
 
 </footer><!-- /.main-footer -->

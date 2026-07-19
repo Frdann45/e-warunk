@@ -5,7 +5,7 @@
  * Author ID: 11240044
  * =======
  */
-require_once __DIR__ . '/../db_connect.php';
+require_once dirname(__DIR__) . '/config/db_connect.php';
 
 // Fetch snacks
 $searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
@@ -92,7 +92,7 @@ foreach ($snacks as $snack) {
                 <p class="featured-card__desc">Gurih, renyah, dan cocok untuk pendamping makan.</p>
                 <div class="featured-card__footer">
                     <span class="featured-card__price"><?= formatRupiah((float) $ks['price']) ?></span>
-                    <form action="cart_action.php" method="POST" style="margin:0;">
+                    <form action="<?= BASE_URL ?>process/cart_action.php" method="POST" style="margin:0;">
                         <input type="hidden" name="product_id" value="<?= (int) $ks['id'] ?>">
                         <input type="hidden" name="redirect_page" value="camilan">
                         <button type="submit" class="featured-card__btn">Tambah</button>
@@ -111,7 +111,7 @@ foreach ($snacks as $snack) {
                 <p class="featured-card__desc">Irisan tipis, manis pas.</p>
                 <div class="featured-card__footer">
                     <span class="featured-card__price"><?= formatRupiah((float) $kp['price']) ?></span>
-                    <form action="cart_action.php" method="POST" style="margin:0;">
+                    <form action="<?= BASE_URL ?>process/cart_action.php" method="POST" style="margin:0;">
                         <input type="hidden" name="product_id" value="<?= (int) $kp['id'] ?>">
                         <input type="hidden" name="redirect_page" value="camilan">
                         <button type="submit" class="featured-card__btn">Tambah</button>
@@ -178,7 +178,7 @@ foreach ($snacks as $snack) {
                     <div>
                         <span class="product-card__price"><?= formatRupiah((float) $product['price']) ?></span>
                     </div>
-                    <form action="cart_action.php" method="POST" style="margin:0;">
+                    <form action="<?= BASE_URL ?>process/cart_action.php" method="POST" style="margin:0;">
                         <input type="hidden" name="action" value="add">
                         <input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>">
                         <input type="hidden" name="redirect_page" value="camilan<?= $searchQuery !== '' ? '&search=' . urlencode($searchQuery) : '' ?>">

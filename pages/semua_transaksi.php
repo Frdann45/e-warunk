@@ -10,7 +10,7 @@
  * ============================================================
  */
 
-require_once __DIR__ . '/../db_connect.php';
+require_once dirname(__DIR__) . '/config/db_connect.php';
 
 // ── Handle Action POST early ────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
     // Redirect preserving GET filters
     $selectedStatus = isset($_GET['status']) ? $_GET['status'] : 'Semua';
     $searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
-    header('Location: index.php?page=semua-transaksi&status=' . urlencode($selectedStatus) . ($searchQuery !== '' ? '&search=' . urlencode($searchQuery) : ''));
+    header('Location: ' . BASE_URL . 'admin/admin.php?page=semua-transaksi&status=' . urlencode($selectedStatus) . ($searchQuery !== '' ? '&search=' . urlencode($searchQuery) : '') . '#transaction-table-section');
     exit;
 }
 
@@ -84,18 +84,70 @@ try {
     $stmtPending = $pdo->query("SELECT COUNT(*) FROM orders WHERE status = 'Diproses'");
     $pendingOrdersStat = (int)$stmtPending->fetchColumn();
 
+    // Fetch daily sales data for the last 7 days
+    $chartSql = "
+        SELECT DATE(order_date) as sales_date, SUM(total_price) as daily_revenue, COUNT(*) as daily_count
+        FROM orders
+        WHERE status != 'Dibatalkan'
+        GROUP BY DATE(order_date)
+        ORDER BY sales_date ASC
+        LIMIT 7
+    ";
+    $chartStmt = $pdo->query($chartSql);
+    $chartData = $chartStmt->fetchAll();
+
 } catch (PDOException $e) {
     error_log('Error loading transactions list: ' . $e->getMessage());
     $orders = [];
     $totalOrdersStat = 1245;
     $totalRevenueStat = 15250000;
     $pendingOrdersStat = 0;
+    $chartData = [];
+}
+
+// Convert to JS arrays
+$chartLabels = [];
+$chartRevenue = [];
+$chartCounts = [];
+
+if (empty($chartData)) {
+    // Generate last 7 days dummy data if no orders exist yet
+    for ($i = 6; $i >= 0; $i--) {
+        $dateStr = date('d M', strtotime("-$i days"));
+        $chartLabels[] = $dateStr;
+        $chartRevenue[] = rand(800000, 2500000);
+        $chartCounts[] = rand(3, 10);
+    }
+} else {
+    // Fill in real data
+    foreach ($chartData as $row) {
+        $chartLabels[] = date('d M', strtotime($row['sales_date']));
+        $chartRevenue[] = (float)$row['daily_revenue'];
+        $chartCounts[] = (int)$row['daily_count'];
+    }
 }
 ?>
 
-<div class="history-header fade-in">
-    <h1 class="history-header__title">Semua Transaksi</h1>
-    <p class="history-header__desc">Pantau dan kelola seluruh riwayat transaksi serta status pesanan pelanggan.</p>
+<div class="history-header fade-in" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+    <div>
+        <h1 class="history-header__title">Semua Transaksi</h1>
+        <p class="history-header__desc">Pantau dan kelola seluruh riwayat transaksi serta status pesanan pelanggan.</p>
+    </div>
+    <!-- Export buttons -->
+    <div style="display: flex; gap: 10px;">
+        <a href="<?= BASE_URL ?>process/export.php?format=excel" class="prod-btn prod-btn--edit" style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; padding: 10px 16px; border-radius: 10px; border: 1.5px solid var(--border-color); background: var(--bg-card); color: var(--text-dark); font-weight: 600; text-decoration: none; transition: all 0.2s;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
+            </svg>
+            Ekspor Excel
+        </a>
+        <a href="<?= BASE_URL ?>process/export.php?format=sql" class="prod-btn prod-btn--primary" style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; padding: 10px 16px; border-radius: 10px; background: linear-gradient(135deg, var(--primary-blue), var(--primary-hover)); color: #fff; font-weight: 600; text-decoration: none; transition: all 0.2s; box-shadow: 0 3px 10px rgba(11, 45, 114, 0.25);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+                <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/>
+            </svg>
+            Ekspor SQL
+        </a>
+    </div>
 </div>
 
 <!-- Stats widgets -->
@@ -143,11 +195,160 @@ try {
     </div>
 </div>
 
-<!-- Filters & Search -->
-<div class="filters-bar fade-in">
+<!-- ── TRANSACTION CHART SECTION ── -->
+<div class="chart-card fade-in" style="margin-top: 24px; margin-bottom: 24px; background: var(--bg-card); padding: 24px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 8px;">
+        <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-dark); margin: 0; display: flex; align-items: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-red)" stroke-width="2.5" style="width: 18px; height: 18px;">
+                <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+            Grafik Penjualan & Transaksi Harian
+        </h3>
+        <span style="font-size: 0.75rem; color: var(--text-gray); font-weight: 500; background: var(--bg-main); padding: 4px 10px; border-radius: 20px;">7 Hari Terakhir</span>
+    </div>
+    <div style="position: relative; height: 260px; width: 100%;">
+        <canvas id="salesChart"></canvas>
+    </div>
+</div>
+
+<!-- Load Chart.js from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var ctx = document.getElementById('salesChart').getContext('2d');
+    var salesChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: <?= json_encode($chartLabels) ?>,
+            datasets: [
+                {
+                    label: 'Pendapatan (Rp)',
+                    data: <?= json_encode($chartRevenue) ?>,
+                    borderColor: '#0AC4E0', // Cyan Accent
+                    backgroundColor: 'rgba(10, 196, 224, 0.08)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.35,
+                    yAxisID: 'y',
+                    pointBackgroundColor: '#0AC4E0',
+                    pointHoverRadius: 6
+                },
+                {
+                    label: 'Jumlah Transaksi',
+                    data:  <?= json_encode($chartCounts) ?>,
+                    borderColor: '#0B2D72', // Navy
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    tension: 0.35,
+                    yAxisID: 'y1',
+                    pointBackgroundColor: '#0B2D72',
+                    pointHoverRadius: 6
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            scales: {
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    grid: {
+                        color: 'rgba(209, 217, 230, 0.4)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return 'Rp ' + value.toLocaleString('id-ID');
+                        },
+                        color: '#4B5F83',
+                        font: {
+                            family: 'Plus Jakarta Sans',
+                            size: 11
+                        }
+                    }
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    grid: {
+                        drawOnChartArea: false
+                    },
+                    ticks: {
+                        color: '#0B2D72',
+                        stepSize: 1,
+                        font: {
+                            family: 'Plus Jakarta Sans',
+                            size: 11
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: '#4B5F83',
+                        font: {
+                            family: 'Plus Jakarta Sans',
+                            size: 11
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        color: '#0C1E43',
+                        boxWidth: 15,
+                        font: {
+                            family: 'Plus Jakarta Sans',
+                            weight: '600',
+                            size: 12
+                        }
+                    }
+                },
+                tooltip: {
+                    padding: 10,
+                    bodyFont: {
+                        family: 'Plus Jakarta Sans'
+                    },
+                    titleFont: {
+                        family: 'Plus Jakarta Sans',
+                        weight: '700'
+                    },
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.datasetIndex === 0) {
+                                label += 'Rp ' + context.raw.toLocaleString('id-ID');
+                            } else {
+                                label += context.raw;
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+
+<div class="filters-bar fade-in" id="transaction-table-section">
     <div class="filters-bar__tabs">
         <?php foreach (['Semua', 'Diproses', 'Dikirim', 'Selesai', 'Dibatalkan'] as $statusOption): ?>
-            <a href="index.php?page=semua-transaksi&status=<?= urlencode($statusOption) ?><?= $searchQuery !== '' ? '&search=' . urlencode($searchQuery) : '' ?>" 
+            <a href="admin.php?page=semua-transaksi&status=<?= urlencode($statusOption) ?><?= $searchQuery !== '' ? '&search=' . urlencode($searchQuery) : '' ?>#transaction-table-section" 
                class="filter-tab <?= $selectedStatus === $statusOption ? 'filter-tab--active' : '' ?>">
                 <?= $statusOption ?>
             </a>
@@ -159,7 +360,7 @@ try {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-box-icon">
                 <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
-            <form action="index.php" method="GET" style="margin:0; display:flex;">
+            <form action="admin.php#transaction-table-section" method="GET" style="margin:0; display:flex;">
                 <input type="hidden" name="page" value="semua-transaksi">
                 <input type="hidden" name="status" value="<?= htmlspecialchars($selectedStatus) ?>">
                 <input type="text" name="search" class="input-search" placeholder="Order ID..." value="<?= htmlspecialchars($searchQuery) ?>">

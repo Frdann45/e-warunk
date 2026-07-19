@@ -10,11 +10,11 @@
  * ============================================================
  */
 
-require_once __DIR__ . '/../db_connect.php';
+require_once dirname(__DIR__) . '/config/db_connect.php';
 
 // ── Auth guard ────────────────────────────────────────────────
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header('Location: login.php');
+    header('Location: ' . BASE_URL . 'login.php');
     exit;
 }
 
@@ -114,13 +114,13 @@ $totalProducts = count($products);
             <?= $editProduct ? 'Edit Produk: ' . htmlspecialchars($editProduct['name']) : 'Tambah Produk Baru' ?>
         </h2>
         <?php if ($editProduct): ?>
-        <a href="admin.php?page=tambah-produk" class="prod-btn prod-btn--cancel" style="margin-left:auto;">
+        <a href="<?= BASE_URL ?>admin/admin.php?page=tambah-produk" class="prod-btn prod-btn--cancel" style="margin-left:auto;">
             ✕ Batal Edit
         </a>
         <?php endif; ?>
     </div>
 
-    <form action="product_action.php" method="POST" enctype="multipart/form-data" class="prod-form" id="prod-form">
+    <form action="<?= BASE_URL ?>process/product_action.php" method="POST" enctype="multipart/form-data" class="prod-form" id="prod-form">
         <input type="hidden" name="action" value="<?= $editProduct ? 'update' : 'add' ?>">
         <?php if ($editProduct): ?>
         <input type="hidden" name="product_id" value="<?= (int) $editProduct['id'] ?>">
@@ -238,7 +238,7 @@ $totalProducts = count($products);
      SEARCH & FILTER BAR
      ══════════════════════════════════════════════════════════ -->
 <div class="prod-toolbar fade-in" id="prod-results">
-    <form method="GET" action="admin.php" class="prod-toolbar__form" id="prod-search-form">
+    <form method="GET" action="<?= BASE_URL ?>admin/admin.php" class="prod-toolbar__form" id="prod-search-form">
         <input type="hidden" name="page" value="tambah-produk">
         <div class="prod-toolbar__search-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="prod-toolbar__search-icon">
@@ -256,7 +256,7 @@ $totalProducts = count($products);
         </select>
         <button type="submit" class="prod-btn prod-btn--primary" id="btn-search-prod">Cari</button>
         <?php if ($search || $filterCat): ?>
-        <a href="admin.php?page=tambah-produk#prod-results" class="prod-btn prod-btn--ghost" id="btn-reset-search">Reset</a>
+        <a href="<?= BASE_URL ?>admin/admin.php?page=tambah-produk#prod-results" class="prod-btn prod-btn--ghost" id="btn-reset-search">Reset</a>
         <?php endif; ?>
     </form>
     <span class="prod-toolbar__count"><?= $totalProducts ?> produk ditemukan</span>
@@ -318,7 +318,7 @@ $totalProducts = count($products);
                 <td style="text-align:center;padding-right:20px;">
                     <div style="display:flex;gap:8px;justify-content:center;">
                         <!-- Edit button -->
-                        <a href="admin.php?page=tambah-produk&edit=<?= $p['id'] ?>#prod-form"
+                        <a href="<?= BASE_URL ?>admin/admin.php?page=tambah-produk&edit=<?= $p['id'] ?>#prod-form"
                            class="prod-btn prod-btn--edit" id="btn-edit-<?= $p['id'] ?>"
                            title="Edit produk">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;">
@@ -328,7 +328,7 @@ $totalProducts = count($products);
                             Edit
                         </a>
                         <!-- Delete form -->
-                        <form action="product_action.php" method="POST" style="margin:0;"
+                        <form action="<?= BASE_URL ?>process/product_action.php" method="POST" style="margin:0;"
                               onsubmit="return confirm('Hapus produk \'<?= htmlspecialchars(addslashes($p['name'])) ?>\'?\nTindakan ini tidak dapat dibatalkan.')">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="product_id" value="<?= $p['id'] ?>">
@@ -363,15 +363,15 @@ $totalProducts = count($products);
 <style>
 /* ── Image Upload Widget ─────────────────────────────────── */
 .img-upload-area {
-    border: 2px dashed #e0dbd5;
+    border: 2px dashed var(--color-border);
     border-radius: 14px;
-    background: #faf8f6;
+    background: var(--color-bg);
     overflow: hidden;
     transition: border-color 0.2s;
 }
 .img-upload-area.drag-over {
-    border-color: #8B5E3C;
-    background: rgba(139,94,60,0.04);
+    border-color: var(--color-primary-light);
+    background: rgba(11, 45, 114, 0.04);
 }
 .img-upload__preview {
     position: relative;
@@ -379,7 +379,7 @@ $totalProducts = count($products);
     width: 100%;
     max-height: 220px;
     overflow: hidden;
-    border-bottom: 1px solid #f0ece8;
+    border-bottom: 1px solid var(--color-border);
 }
 .img-upload__preview.has-image { display: block; }
 .img-upload__preview img {
@@ -403,7 +403,7 @@ $totalProducts = count($products);
     transition: background 0.2s;
     line-height: 1;
 }
-.img-preview__remove:hover { background: #b8382c; }
+.img-preview__remove:hover { background: var(--color-accent-red); }
 .img-upload__dropzone {
     padding: 14px 20px;
     display: flex; flex-direction: row;
@@ -411,7 +411,7 @@ $totalProducts = count($products);
     gap: 12px; cursor: pointer;
     transition: background 0.15s;
 }
-.img-upload__dropzone:hover { background: rgba(139,94,60,0.04); }
+.img-upload__dropzone:hover { background: rgba(11, 45, 114, 0.04); }
 .img-upload__icon svg {
     width: 28px; height: 28px;
     color: #c4b5a5;
@@ -420,11 +420,11 @@ $totalProducts = count($products);
 }
 .img-upload__dropzone-text { display: flex; flex-direction: column; gap: 2px; }
 .img-upload__text {
-    font-size: 0.84rem; color: #666;
+    font-size: 0.84rem; color: var(--color-text-secondary);
     margin: 0;
 }
 .img-upload__link {
-    color: #6D3A1A; font-weight: 700;
+    color: var(--color-primary); font-weight: 700;
     text-decoration: underline; cursor: pointer;
 }
 .img-upload__hint {
@@ -433,8 +433,8 @@ $totalProducts = count($products);
 .img-upload__url-row {
     display: flex; align-items: center; gap: 10px;
     padding: 10px 16px;
-    border-top: 1px solid #f0ece8;
-    background: #f4f1ee;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-bg);
     flex-wrap: wrap;
 }
 .img-upload__url-label {
@@ -450,20 +450,20 @@ $totalProducts = count($products);
 }
 .img-upload__progress {
     height: 4px;
-    background: #e8e4e0;
+    background: var(--color-border);
     border-radius: 0;
     overflow: hidden;
     margin-top: -2px;
 }
 .img-upload__progress-bar {
     height: 100%;
-    background: linear-gradient(90deg, #6D3A1A, #c87941);
+    background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
     width: 0%;
     transition: width 0.3s;
     border-radius: 0;
 }
 .img-upload__error {
-    font-size: 0.8rem; color: #b8382c;
+    font-size: 0.8rem; color: var(--color-accent-red);
     padding: 6px 16px 10px;
     margin: 0;
 }
@@ -478,22 +478,22 @@ $totalProducts = count($products);
 @keyframes flashSlide { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
 .prod-flash__icon { width: 18px; height: 18px; flex-shrink: 0; }
 .prod-flash--success { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.3); color: #15803d; }
-.prod-flash--error   { background: rgba(184,56,44,0.06); border: 1px solid rgba(184,56,44,0.25); color: #b8382c; }
+.prod-flash--error   { background: rgba(224,41,41,0.06); border: 1px solid rgba(224,41,41,0.25); color: var(--color-accent-red); }
 
 /* Form card */
 .prod-form-card {
     background: #fff; border-radius: 16px;
-    border: 1px solid #f0ece8;
+    border: 1px solid var(--color-border);
     box-shadow: 0 2px 12px rgba(0,0,0,0.06);
     margin-bottom: 24px; overflow: hidden;
 }
 .prod-form-card__header {
     display: flex; align-items: center; gap: 12px;
-    padding: 18px 24px; background: #faf8f6;
-    border-bottom: 1px solid #f0ece8;
+    padding: 18px 24px; background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
 }
-.prod-form-card__icon { width: 20px; height: 20px; color: #6D3A1A; flex-shrink: 0; }
-.prod-form-card__title { font-size: 1rem; font-weight: 700; color: #2d2d2d; margin: 0; }
+.prod-form-card__icon { width: 20px; height: 20px; color: var(--color-primary); flex-shrink: 0; }
+.prod-form-card__title { font-size: 1rem; font-weight: 700; color: var(--color-text-primary); margin: 0; }
 
 /* Form */
 .prod-form { padding: 24px; }
@@ -509,16 +509,16 @@ $totalProducts = count($products);
     font-size: 0.7rem; font-weight: 700; color: #999;
     text-transform: uppercase; letter-spacing: 0.05em;
 }
-.prod-form__req { color: #b8382c; }
+.prod-form__req { color: var(--color-accent-red); }
 .prod-form__input, .prod-form__select {
-    padding: 10px 12px; border: 1.5px solid #e8e4e0;
+    padding: 10px 12px; border: 1.5px solid var(--color-border);
     border-radius: 10px; font-size: 0.88rem; font-family: inherit;
-    color: #2d2d2d; background: #f8f6f4; outline: none;
+    color: var(--color-text-primary); background: var(--color-bg); outline: none;
     transition: all 0.2s;
 }
 .prod-form__input:focus, .prod-form__select:focus {
-    border-color: #8B5E3C; background: #fff;
-    box-shadow: 0 0 0 3px rgba(109,58,26,0.08);
+    border-color: var(--color-primary-light); background: #fff;
+    box-shadow: 0 0 0 3px rgba(11, 45, 114, 0.08);
 }
 .prod-form__actions { display: flex; gap: 10px; }
 
@@ -535,15 +535,15 @@ $totalProducts = count($products);
 }
 .prod-toolbar__search {
     width: 100%; padding: 9px 12px 9px 36px;
-    border: 1.5px solid #e8e4e0; border-radius: 10px;
-    font-size: 0.87rem; font-family: inherit; background: #f8f6f4;
+    border: 1.5px solid var(--color-border); border-radius: 10px;
+    font-size: 0.87rem; font-family: inherit; background: var(--color-bg);
     outline: none; transition: all 0.2s;
 }
-.prod-toolbar__search:focus { border-color: #8B5E3C; background:#fff; box-shadow:0 0 0 3px rgba(109,58,26,0.08); }
+.prod-toolbar__search:focus { border-color: var(--color-primary-light); background:#fff; box-shadow:0 0 0 3px rgba(11, 45, 114, 0.08); }
 .prod-toolbar__filter {
-    padding: 9px 12px; border: 1.5px solid #e8e4e0; border-radius: 10px;
-    font-size: 0.87rem; font-family: inherit; background: #f8f6f4;
-    outline: none; color: #2d2d2d; cursor: pointer;
+    padding: 9px 12px; border: 1.5px solid var(--color-border); border-radius: 10px;
+    font-size: 0.87rem; font-family: inherit; background: var(--color-bg);
+    outline: none; color: var(--color-text-primary); cursor: pointer;
 }
 .prod-toolbar__count { font-size: 0.78rem; color: #999; white-space: nowrap; }
 
@@ -556,18 +556,18 @@ $totalProducts = count($products);
     transition: all 0.2s; white-space: nowrap;
 }
 .prod-btn--primary {
-    background: linear-gradient(135deg, #6D3A1A, #4A2710);
-    color: #fff; box-shadow: 0 3px 10px rgba(109,58,26,0.25);
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    color: #fff; box-shadow: 0 3px 10px rgba(11, 45, 114, 0.25);
 }
-.prod-btn--primary:hover { transform:translateY(-1px); box-shadow:0 5px 14px rgba(109,58,26,0.35); }
-.prod-btn--ghost  { background: #f0ece8; color: #4a4a4a; border-color: #e8e4e0; }
-.prod-btn--ghost:hover  { background: #e8e4e0; }
-.prod-btn--cancel { background: #fff5f5; color: #b8382c; border-color: #fde8e8; }
+.prod-btn--primary:hover { transform:translateY(-1px); box-shadow:0 5px 14px rgba(11, 45, 114, 0.35); }
+.prod-btn--ghost  { background: var(--color-border); color: var(--color-text-secondary); border-color: var(--color-border); }
+.prod-btn--ghost:hover  { background: var(--color-border); }
+.prod-btn--cancel { background: #fff5f5; color: var(--color-accent-red); border-color: #fde8e8; }
 .prod-btn--cancel:hover { background: #fde8e8; }
-.prod-btn--edit   { background: #f8f6f4; color: #4a4a4a; border-color: #e8e4e0; }
-.prod-btn--edit:hover   { border-color:#6D3A1A; color:#6D3A1A; }
-.prod-btn--danger { background: #fff8f8; color: #b8382c; border-color: #fde8e8; }
-.prod-btn--danger:hover { background: #b8382c; color: #fff; border-color:#b8382c; }
+.prod-btn--edit   { background: var(--color-bg); color: var(--color-text-secondary); border-color: var(--color-border); }
+.prod-btn--edit:hover   { border-color:var(--color-primary); color:var(--color-primary); }
+.prod-btn--danger { background: #fff8f8; color: var(--color-accent-red); border-color: #fde8e8; }
+.prod-btn--danger:hover { background: var(--color-accent-red); color: #fff; border-color:var(--color-accent-red); }
 
 /* Category badge */
 .prod-cat-badge {
@@ -582,7 +582,7 @@ $totalProducts = count($products);
 .prod-cat-badge--perawatankecant { background: rgba(236,72,153,0.1);  color: #be185d; }
 
 /* Table row hover */
-.prod-table__row:hover { background: #faf8f6; }
+.prod-table__row:hover { background: var(--color-bg); }
 
 @media (max-width: 768px) {
     .prod-form__grid { grid-template-columns: 1fr 1fr; }

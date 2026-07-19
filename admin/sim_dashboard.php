@@ -12,11 +12,11 @@
  */
 
 session_start();
-require_once __DIR__ . '/db_connect.php';
+require_once dirname(__DIR__) . '/config/db_connect.php';
 
 // Authorization Check: Admin role only
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header('Location: login.php');
+    header('Location: ' . BASE_URL . 'login.php');
     exit;
 }
 
@@ -87,8 +87,8 @@ $page         = 'beranda'; // Set to beranda so sidebar highlights Dashboard lin
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="E-WARUNG Admin Dashboard — Warung Tiga Saudara">
     <title>Dashboard Toko — Administrator</title>
-    <link rel="stylesheet" href="style.css?v=<?= time() ?>">
-    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css?v=<?= time() ?>">
+    <link rel="icon" type="image/png" href="<?= BASE_URL ?>assets/images/logo.png">
 </head>
 <body>
 <div class="app-layout">
@@ -98,15 +98,15 @@ $page         = 'beranda'; // Set to beranda so sidebar highlights Dashboard lin
          ═══════════════════════════════════════════════════════ -->
     <nav class="navbar" id="navbar">
         <!-- Brand -->
-        <a href="sim_dashboard.php" class="navbar__brand">
+        <a href="<?= BASE_URL ?>admin/sim_dashboard.php" class="navbar__brand">
             <span class="navbar__logo">
-                <img src="images/logo.png" alt="Logo Warung Tiga Saudara">
+                <img src="<?= BASE_URL ?>assets/images/logo.png" alt="Logo Warung Tiga Saudara">
             </span>
             <span class="navbar__title">Warung Tiga Saudara</span>
         </a>
 
         <!-- Admin View Label -->
-        <div style="background: rgba(109, 58, 26, 0.1); color: var(--color-primary); font-weight: 700; font-size: 0.8rem; padding: 4px 12px; border-radius: 20px;">
+        <div style="background: rgba(11, 45, 114, 0.1); color: var(--color-primary); font-weight: 700; font-size: 0.8rem; padding: 4px 12px; border-radius: 20px;">
             PANEL ADMINISTRATOR
         </div>
 
@@ -157,7 +157,7 @@ $page         = 'beranda'; // Set to beranda so sidebar highlights Dashboard lin
     <div class="app-body">
 
         <!-- Left Sidebar (RBAC Component) -->
-        <?php include __DIR__ . '/sidebar.php'; ?>
+        <?php include dirname(__DIR__) . '/includes/sidebar.php'; ?>
 
         <!-- Main Content Area -->
         <main class="main-content" id="main-content">
@@ -240,7 +240,7 @@ $page         = 'beranda'; // Set to beranda so sidebar highlights Dashboard lin
                 <div class="table-container" style="margin: 0; background: var(--color-bg-card); border-radius: var(--radius-lg); border: 1px solid var(--color-border); padding: 20px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                         <h3 style="font-size: 1rem; font-weight: 700; color: var(--color-text-primary);">Transaksi Terbaru</h3>
-                        <a href="index.php?page=semua-transaksi" style="font-size: 0.8rem; font-weight: 600; color: var(--color-primary); text-decoration: none;">Lihat Semua &rarr;</a>
+                        <a href="admin.php?page=semua-transaksi" style="font-size: 0.8rem; font-weight: 600; color: var(--color-primary); text-decoration: none;">Lihat Semua &rarr;</a>
                     </div>
                     
                     <table class="history-table" style="width: 100%;">
@@ -286,7 +286,7 @@ $page         = 'beranda'; // Set to beranda so sidebar highlights Dashboard lin
                 <div style="background: var(--color-bg-card); border-radius: var(--radius-lg); border: 1px solid var(--color-border); padding: 20px; display: flex; flex-direction: column; gap: 16px;">
                     <h3 style="font-size: 1rem; font-weight: 700; color: var(--color-text-primary); margin-bottom: 4px;">Pintasan Cepat</h3>
                     
-                    <a href="index.php?page=pesanan-masuk" style="display: flex; align-items: center; gap: 12px; text-decoration: none; padding: 12px 16px; background: var(--bg); border-radius: var(--radius-md); transition: background 0.2s;" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='var(--bg)'">
+                    <a href="admin.php?page=pesanan-masuk" style="display: flex; align-items: center; gap: 12px; text-decoration: none; padding: 12px 16px; background: var(--bg); border-radius: var(--radius-md); transition: background 0.2s;" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='var(--bg)'">
                         <div style="background: rgba(243, 156, 18, 0.1); color: #F39C12; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
                                 <circle cx="12" cy="12" r="10"/>
@@ -299,7 +299,7 @@ $page         = 'beranda'; // Set to beranda so sidebar highlights Dashboard lin
                         </div>
                     </a>
 
-                    <a href="index.php?page=proses-pengiriman" style="display: flex; align-items: center; gap: 12px; text-decoration: none; padding: 12px 16px; background: var(--bg); border-radius: var(--radius-md); transition: background 0.2s;" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='var(--bg)'">
+                    <a href="admin.php?page=proses-pengiriman" style="display: flex; align-items: center; gap: 12px; text-decoration: none; padding: 12px 16px; background: var(--bg); border-radius: var(--radius-md); transition: background 0.2s;" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='var(--bg)'">
                         <div style="background: rgba(142, 68, 173, 0.1); color: #8E44AD; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
                                 <rect x="1" y="3" width="15" height="13"/>
@@ -314,7 +314,7 @@ $page         = 'beranda'; // Set to beranda so sidebar highlights Dashboard lin
                         </div>
                     </a>
 
-                    <a href="index.php?page=semua-transaksi" style="display: flex; align-items: center; gap: 12px; text-decoration: none; padding: 12px 16px; background: var(--bg); border-radius: var(--radius-md); transition: background 0.2s;" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='var(--bg)'">
+                    <a href="admin.php?page=semua-transaksi" style="display: flex; align-items: center; gap: 12px; text-decoration: none; padding: 12px 16px; background: var(--bg); border-radius: var(--radius-md); transition: background 0.2s;" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='var(--bg)'">
                         <div style="background: rgba(41, 128, 185, 0.1); color: #2980B9; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
                                 <circle cx="12" cy="12" r="10"/>

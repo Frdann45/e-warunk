@@ -11,7 +11,7 @@
  * ============================================================
  */
 
-require_once __DIR__ . '/config_xendit.php';
+require_once __DIR__ . '/config/config_xendit.php';
 
 // ── 1. Secure Webhook Validation ────────────────────────────
 // Extract Xendit Callback Token header
