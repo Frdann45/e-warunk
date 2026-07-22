@@ -642,9 +642,7 @@ if (isset($_SESSION['cart_message'])) {
 
         <?php else:
             /* ── Resolve display values ──────────────────────── */
-            $imageSrc       = getProductImage($product['name'], $product['image_url']);
-            $hasImage       = file_exists(__DIR__ . '/' . $imageSrc);
-            $displayImg     = $hasImage ? htmlspecialchars($imageSrc) : 'images/logo.png';
+            $displayImg     = htmlspecialchars(getProductImage($product['name'], $product['image_url']));
             $productName    = htmlspecialchars($product['name']);
             $category       = htmlspecialchars($product['category']);
             $unitDesc       = htmlspecialchars($product['unit_desc']);
@@ -709,51 +707,7 @@ if (isset($_SESSION['cart_message'])) {
                 </div>
 
                 <!-- Thumbnail Strip (1 real + 3 decorative placeholders) -->
-                <div class="dp-thumbnails" id="dp-thumbnails" role="list" aria-label="Tampilan lain produk">
 
-                    <!-- Thumb 1 — active (mirrors main image) -->
-                    <div class="dp-thumb dp-thumb--active" id="dp-thumb-1" role="listitem"
-                         tabindex="0" onclick="dpSetMain('<?= $displayImg ?>', this)"
-                         aria-label="Gambar produk 1" aria-current="true">
-                        <img src="<?= $displayImg ?>"
-                             alt="<?= $productName ?>"
-                             onerror="this.parentElement.classList.add('dp-thumb-placeholder'); this.remove()">
-                    </div>
-
-                    <!-- Thumb 2 — placeholder -->
-                    <div class="dp-thumb dp-thumb-placeholder" id="dp-thumb-2" role="listitem"
-                         tabindex="0" onclick="dpSetMain(null, this)" aria-label="Gambar produk 2">
-                        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"
-                             stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="3" width="18" height="18" rx="3"/>
-                            <circle cx="8.5" cy="8.5" r="1.5"/>
-                            <polyline points="21 15 16 10 5 21"/>
-                        </svg>
-                    </div>
-
-                    <!-- Thumb 3 — placeholder -->
-                    <div class="dp-thumb dp-thumb-placeholder" id="dp-thumb-3" role="listitem"
-                         tabindex="0" onclick="dpSetMain(null, this)" aria-label="Gambar produk 3">
-                        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"
-                             stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="3" width="18" height="18" rx="3"/>
-                            <circle cx="8.5" cy="8.5" r="1.5"/>
-                            <polyline points="21 15 16 10 5 21"/>
-                        </svg>
-                    </div>
-
-                    <!-- Thumb 4 — placeholder -->
-                    <div class="dp-thumb dp-thumb-placeholder" id="dp-thumb-4" role="listitem"
-                         tabindex="0" onclick="dpSetMain(null, this)" aria-label="Gambar produk 4">
-                        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"
-                             stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="3" width="18" height="18" rx="3"/>
-                            <circle cx="8.5" cy="8.5" r="1.5"/>
-                            <polyline points="21 15 16 10 5 21"/>
-                        </svg>
-                    </div>
-
-                </div><!-- /dp-thumbnails -->
             </section><!-- /dp-gallery -->
 
             <!-- ╔══════════════════════════════╗
@@ -975,31 +929,7 @@ if (isset($_SESSION['cart_message'])) {
      PAGE SCRIPTS
      ══════════════════════════════════════════════════════════ -->
 <script>
-/* ─── Thumbnail switcher ────────────────────────────────────
-   Click a thumbnail to swap the main image with a smooth fade.
- ─────────────────────────────────────────────────────────── */
-function dpSetMain(src, thumbEl) {
-    var mainImg = document.getElementById('dp-main-image');
-    var thumbs  = document.querySelectorAll('.dp-thumb');
 
-    thumbs.forEach(function (t) {
-        t.classList.remove('dp-thumb--active');
-        t.removeAttribute('aria-current');
-    });
-    thumbEl.classList.add('dp-thumb--active');
-    thumbEl.setAttribute('aria-current', 'true');
-
-    if (src && mainImg) {
-        mainImg.style.transition = 'opacity .2s, transform .2s';
-        mainImg.style.opacity    = '0';
-        mainImg.style.transform  = 'scale(.96)';
-        setTimeout(function () {
-            mainImg.src             = src;
-            mainImg.style.opacity   = '1';
-            mainImg.style.transform = 'scale(1)';
-        }, 160);
-    }
-}
 
 /* ─── Quantity stepper ──────────────────────────────────────
    +/- buttons adjust the numeric input; enforces min 1 max 99.

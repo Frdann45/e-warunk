@@ -66,7 +66,7 @@ function handleImageUpload(): ?string
 
     $ext      = $allowed[$mimeType];
     $filename = uniqid('prod_', true) . '.' . $ext;
-    $destDir  = __DIR__ . '/images/uploads/';
+    $destDir  = dirname(__DIR__) . '/assets/images/uploads/';
     if (!is_dir($destDir)) mkdir($destDir, 0755, true);
     $destPath = $destDir . $filename;
 

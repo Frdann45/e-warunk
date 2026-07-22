@@ -14,6 +14,12 @@
  */
 require_once dirname(__DIR__) . '/config/db_connect.php';
 
+// Redirect to user dashboard akun.php?tab=orders so left navigation sidebar stays visible
+$statusParam = isset($_GET['status']) ? '&status=' . urlencode($_GET['status']) : '';
+$searchParam = isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : '';
+header('Location: akun.php?tab=orders' . $statusParam . $searchParam);
+exit;
+
 // Handle order actions (Cancel or Complete)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $action    = $_POST['action'];

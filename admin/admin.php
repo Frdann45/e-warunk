@@ -29,13 +29,14 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role
 require_once dirname(__DIR__) . '/config/db_connect.php';
 
 // ── Page Routing ────────────────────────────────────────────
-$page = isset($_GET['page']) ? $_GET['page'] : 'pesanan-masuk';
+$page = isset($_GET['page']) ? $_GET['page'] : 'tambah-produk';
 
 // Whitelist admin pages
-$adminPages = ['pesanan-masuk', 'proses-pengiriman', 'semua-transaksi', 'tambah-produk', 'buat-promo'];
+$adminPages = ['pesanan-masuk', 'proses-pengiriman', 'semua-transaksi', 'tambah-produk', 'buat-promo', 'bantuan'];
 if (!in_array($page, $adminPages)) {
-    $page = 'pesanan-masuk';
+    $page = 'tambah-produk';
 }
+$sidebarPage = $page;
 
 // ── Handle Admin POST Actions early (before HTML output) ────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
@@ -101,6 +102,9 @@ function formatRupiah(float $price): string
                     break;
                 case 'buat-promo':
                     include dirname(__DIR__) . '/pages/buat_promo.php';
+                    break;
+                case 'bantuan':
+                    include dirname(__DIR__) . '/pages/bantuan.php';
                     break;
                 default:
                     include dirname(__DIR__) . '/pages/pesanan_masuk.php';

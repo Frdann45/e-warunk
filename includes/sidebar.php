@@ -28,8 +28,18 @@
 
 // ── Resolve current role & active page ──────────────────────
 $sidebarRole = isset($_SESSION['role']) ? $_SESSION['role'] : 'user';
-$sidebarPage = isset($_GET['page'])     ? $_GET['page']     : 'pesanan-masuk';
-$isAdmin     = ($sidebarRole === 'admin');
+
+if (!isset($sidebarPage) || empty($sidebarPage)) {
+    if (isset($_GET['page']) && !empty($_GET['page'])) {
+        $sidebarPage = $_GET['page'];
+    } elseif (basename($_SERVER['PHP_SELF']) === 'bantuan.php') {
+        $sidebarPage = 'bantuan';
+    } else {
+        $sidebarPage = 'tambah-produk';
+    }
+}
+
+$isAdmin = ($sidebarRole === 'admin');
 
 // ── Admin: pending order count for badge ────────────────────
 // Dynamic count: SELECT COUNT(*) FROM orders WHERE status = 'Menunggu Diproses'
@@ -182,9 +192,10 @@ if ($isAdmin && isset($pdo)) {
                 $session_role = isset($_SESSION['role']) ? $_SESSION['role'] : 'user';
 
                 if ($session_role === 'admin') {
-                    // Admin: link to system manual
+                    // Admin: link to system manual (bantuan.php)
+                    $bantuan_url = BASE_URL . 'admin/admin.php?page=bantuan';
                     echo '<li>';
-                    echo '<a href="<?= BASE_URL ?>help_admin.php" class="sidebar__nav-item" id="nav-bantuan">';
+                    echo '<a href="' . htmlspecialchars($bantuan_url) . '" class="sidebar__nav-item ' . (isset($sidebarPage) && $sidebarPage === 'bantuan' ? 'sidebar__nav-item--active' : '') . '" id="nav-bantuan">';
                     echo '<span class="sidebar__nav-icon"><i class="icon-help" aria-hidden="true">';
                     echo '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">';
                     echo '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>';

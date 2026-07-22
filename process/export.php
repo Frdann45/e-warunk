@@ -37,6 +37,14 @@ if ($format === 'excel') {
             ORDER BY o.order_date DESC
         ");
         $orders = $stmt->fetchAll();
+
+        // Fetch users map for email lookup
+        $userStmt = $pdo->query("SELECT name, email FROM users");
+        $usersList = $userStmt->fetchAll();
+        $userEmails = [];
+        foreach ($usersList as $u) {
+            $userEmails[strtolower(trim($u['name']))] = $u['email'];
+        }
     } catch (PDOException $e) {
         error_log('Excel export database error: ' . $e->getMessage());
         die('Gagal mengambil data transaksi untuk ekspor.');
@@ -60,23 +68,30 @@ if ($format === 'excel') {
     echo '</tr>';
     
     foreach ($orders as $order) {
-        $mainItemText = htmlspecialchars($order['first_item_name']);
-        $extraItemsCount = (int) $order['item_count'] - 1;
+        $mainItemText = htmlspecialchars($order['first_item_name'] ?? '');
+        $extraItemsCount = (int) ($order['item_count'] ?? 0) - 1;
         if ($extraItemsCount > 0) {
             $mainItemText .= " (+{$extraItemsCount} item lainnya)";
         }
         
-        $dateTime = new DateTime($order['order_date']);
+        $dateTime = new DateTime($order['order_date'] ?? 'now');
         $formattedDate = $dateTime->format('d-m-Y H:i');
         
+        $addressLines = explode("\n", $order['shipping_address'] ?? '');
+        $customerName = isset($addressLines[0]) ? trim($addressLines[0]) : '';
+        $customerEmail = isset($userEmails[strtolower($customerName)]) ? $userEmails[strtolower($customerName)] : '-';
+        if ($customerName === '') {
+            $customerName = 'Pelanggan';
+        }
+        
         echo '<tr style="font-family:sans-serif; font-size:10pt;">';
-        echo '<td style="mso-number-format:\'\@\';">#' . htmlspecialchars($order['order_code']) . '</td>';
+        echo '<td style="mso-number-format:\'\@\';">#' . htmlspecialchars($order['order_code'] ?? '') . '</td>';
         echo '<td>' . $formattedDate . '</td>';
-        echo '<td>' . htmlspecialchars($order['name']) . '</td>';
-        echo '<td>' . htmlspecialchars($order['email']) . '</td>';
+        echo '<td>' . htmlspecialchars($customerName) . '</td>';
+        echo '<td>' . htmlspecialchars($customerEmail) . '</td>';
         echo '<td>' . $mainItemText . '</td>';
-        echo '<td align="right">' . (float) $order['total_price'] . '</td>';
-        echo '<td>' . htmlspecialchars($order['status']) . '</td>';
+        echo '<td align="right">' . (float) ($order['total_price'] ?? 0) . '</td>';
+        echo '<td>' . htmlspecialchars($order['status'] ?? '') . '</td>';
         echo '</tr>';
     }
     echo '</table>';

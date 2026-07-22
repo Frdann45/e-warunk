@@ -28,7 +28,7 @@ try {
 <!-- ═══════════════════════════════════════════════════════════
      HERO BANNER — Full Width
      ═══════════════════════════════════════════════════════════ -->
-<section class="user-hero fade-in" id="hero-banner">
+<section class="user-hero scroll-reveal" id="hero-banner">
     <div class="user-hero__slider">
         <img src="<?= BASE_URL ?>assets/images/warung.webp" alt="Warung Tiga Saudara Storefront" class="user-hero__image">
         <div class="user-hero__overlay"></div>
@@ -46,7 +46,7 @@ try {
 <!-- ═══════════════════════════════════════════════════════════
      KATEGORI — Shopee-Style Horizontal Grid
      ═══════════════════════════════════════════════════════════ -->
-<section class="category-section fade-in" id="section-kategori">
+<section class="category-section scroll-reveal" id="section-kategori">
     <div class="category-section__header">
         <h2 class="category-section__title">KATEGORI</h2>
     </div>
@@ -136,7 +136,7 @@ try {
 <!-- ═══════════════════════════════════════════════════════════
      TOKO KAMI GALLERY
      ═══════════════════════════════════════════════════════════ -->
-<section class="gallery user-gallery fade-in" id="section-gallery">
+<section class="gallery user-gallery scroll-reveal" id="section-gallery">
     <div class="section-header">
         <div style="display: flex; align-items: center; gap: 10px;">
             <span class="section-header__icon">
@@ -149,13 +149,13 @@ try {
         </div>
     </div>
     <div class="gallery__grid">
-        <div class="gallery__item fade-in">
+        <div class="gallery__item scroll-reveal">
             <img src="<?= BASE_URL ?>assets/images/1.webp" alt="Interior toko Warung Tiga Saudara">
         </div>
-        <div class="gallery__item fade-in">
+        <div class="gallery__item scroll-reveal">
             <img src="<?= BASE_URL ?>assets/images/2.webp" alt="Display produk segar">
         </div>
-        <div class="gallery__item fade-in">
+        <div class="gallery__item scroll-reveal">
             <img src="<?= BASE_URL ?>assets/images/3.webp" alt="Rak bumbu dan saus">
         </div>
     </div>
@@ -164,7 +164,7 @@ try {
 <!-- ═══════════════════════════════════════════════════════════
      PRODUK UNGGULAN — Full Width Grid
      ═══════════════════════════════════════════════════════════ -->
-<section class="products user-products fade-in" id="section-featured-products">
+<section class="products user-products scroll-reveal" id="section-featured-products">
     <div class="section-header">
         <div style="display: flex; align-items: center; gap: 10px;">
             <span class="section-header__icon">
@@ -179,7 +179,7 @@ try {
     <div class="products__grid user-products__grid">
         <?php if (!empty($featuredProducts)): ?>
             <?php foreach ($featuredProducts as $product): ?>
-                <div class="product-card fade-in" id="product-<?= htmlspecialchars($product['id']) ?>">
+                <div class="product-card scroll-reveal" id="product-<?= htmlspecialchars($product['id']) ?>">
                     <!-- Clickable image → detail page -->
                     <a href="detail_produk.php?id=<?= (int) $product['id'] ?>" class="product-card__link" style="text-decoration:none;color:inherit;display:block;">
                         <div class="product-card__image-wrapper">

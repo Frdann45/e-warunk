@@ -79,13 +79,13 @@ $pdo = getDBConnection();
 function getProductImage(string $name, string $dbUrl = ''): string
 {
     // 1. Use DB URL if it is a real uploaded/custom path that exists on disk
-    if ($dbUrl !== '' && $dbUrl !== 'assets/images/logo.png' && $dbUrl !== 'assets/images/logo.png') {
+    if ($dbUrl !== '' && $dbUrl !== 'assets/images/logo.png') {
         $testUrl = $dbUrl;
-        if (strpos($testUrl, 'assets/images/') === 0) {
+        if (strpos($testUrl, 'assets/') !== 0) {
             $testUrl = 'assets/' . $testUrl;
         }
         if (file_exists(BASE_PATH . $testUrl)) {
-            return $testUrl;
+            return BASE_URL . $testUrl;
         }
     }
 
@@ -165,6 +165,7 @@ function getProductImage(string $name, string $dbUrl = ''): string
     ];
 
     // 3. Fallback to logo if name not in map
-    return $map[$name] ?? 'assets/images/logo.png';
+    $path = $map[$name] ?? 'assets/images/logo.png';
+    return BASE_URL . $path;
 }
 

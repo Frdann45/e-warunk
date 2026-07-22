@@ -16,7 +16,7 @@
     --primary-blue:        #0B2D72; /* Navy Blue */
     --primary-hover:       #0992C2; /* Steel Blue */
     --accent-red:          #0AC4E0; /* Cyan Accent */
-    --bg-main:             #FFFFFF; /* White Background */
+    --bg-main:             #F8FAFC; /* Soft Off-White Background */
     --bg-card:             #FFFFFF; /* Card and container backgrounds */
     --text-dark:           #0C1E43; /* Deep Navy Text */
     --text-gray:           #4B5F83; /* Muted Navy Text */
@@ -84,7 +84,7 @@ html {
 body {
     font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
     color: var(--text-dark);
-    background-color: var(--bg-main);
+    background-color: #F8FAFC;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -5351,7 +5351,6 @@ input:checked + .slider:before {
     gap: 20px;
     padding: 10px 24px;
     max-width: 100%;
-    margin-left: var(--sidebar-width, 230px);
 }
 
 /* Admin Brand */
@@ -5447,6 +5446,7 @@ input:checked + .slider:before {
     align-items: center;
     gap: 12px;
     flex-shrink: 0;
+    margin-left: auto;
 }
 
 .admin-header__visit-btn {
@@ -6079,4 +6079,119 @@ input:checked + .slider:before {
         order: 2 !important;
     }
 }
+
+/* ============================================================
+   MOBILE UI REVAMP & SMOOTH SCROLL REVEAL ANIMATIONS
+   Warung Tiga Saudara (e-warung)
+   ============================================================ */
+
+/* ── 1. Non-Flat UI & Depth Elevation ──────────────────────── */
+.product-card,
+.category-section,
+.user-hero,
+.user-hero__slider,
+.gallery__item {
+    background-color: #FFFFFF !important;
+    border-radius: 16px !important;
+    border: none !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01) !important;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.product-card:hover,
+.product-card:active {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.02) !important;
+}
+
+/* ── 2. Smooth Scroll & Scroll Reveal Utility Classes ──────── */
+html {
+    scroll-behavior: smooth !important;
+}
+
+.scroll-reveal {
+    opacity: 0 !important;
+    transform: translateY(30px) !important;
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    will-change: opacity, transform;
+}
+
+.scroll-reveal.is-visible {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+/* ── 3. Badges & Visual Polish ──────────────────────────────── */
+.product-card__badge,
+.product-card__badge--laris,
+.product-card__badge--promo {
+    border-radius: 20px !important;
+    background: linear-gradient(135deg, #FF9800, #FF5722) !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    padding: 4px 12px !important;
+    font-size: 0.7rem !important;
+    letter-spacing: 0.04em !important;
+    box-shadow: 0 4px 10px rgba(255, 87, 34, 0.3) !important;
+}
+
+.product-card__price,
+.product-price {
+    color: #0052CC !important;
+    font-weight: 700 !important;
+    font-size: 1.1rem !important;
+}
+
+/* ── 4. Responsive Enhancements (Mobile ≤ 768px) ────────────── */
+@media (max-width: 768px) {
+    /* Horizontal Photo Slider for Toko Kami */
+    .gallery__grid {
+        display: flex !important;
+        overflow-x: auto !important;
+        scroll-snap-type: x mandatory !important;
+        -webkit-overflow-scrolling: touch;
+        gap: 16px !important;
+        padding-bottom: 12px !important;
+        scrollbar-width: none; /* Firefox */
+    }
+
+    .gallery__grid::-webkit-scrollbar {
+        display: none; /* Chrome & Safari */
+    }
+
+    .gallery__item {
+        flex: 0 0 80vw !important;
+        width: 80vw !important;
+        scroll-snap-align: start !important;
+        border-radius: 12px !important;
+        aspect-ratio: 4 / 3 !important;
+    }
+
+    /* Mobile Search Bar Header Adjustment (Full line below logo & actions) */
+    .user-header__inner,
+    .header-user__inner {
+        flex-wrap: wrap !important;
+        gap: 12px 16px !important;
+        padding: 12px 16px !important;
+    }
+
+    .user-header__brand,
+    .header-user__brand {
+        order: 1 !important;
+    }
+
+    .user-header__actions {
+        order: 2 !important;
+        margin-left: auto !important;
+    }
+
+    .user-header__search-wrapper {
+        order: 3 !important;
+        flex: 0 0 100% !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-top: 4px !important;
+    }
+}
+
 

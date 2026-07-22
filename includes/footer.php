@@ -236,3 +236,7 @@
     </div><!-- /.main-footer__bottom -->
 
 </footer><!-- /.main-footer -->
+
+<!-- Scroll Reveal Animation Script -->
+<script src="<?= BASE_URL ?>assets/js/scroll-animation.js"></script>
+

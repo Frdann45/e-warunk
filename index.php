@@ -20,7 +20,7 @@ require_once __DIR__ . '/config/db_connect.php';
 
 // ── RBAC: Redirect admins to admin portal ───────────────────
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-    header('Location: admin/admin.php');
+    header('Location: admin/admin.php?page=tambah-produk');
     exit;
 }
 
@@ -42,6 +42,14 @@ $userPages = [
 ];
 if (!in_array($page, $userPages)) {
     $page = 'beranda';
+}
+
+// Redirect 'riwayat' to user dashboard (akun.php?tab=orders) so left sidebar remains visible
+if ($page === 'riwayat') {
+    $statusParam = isset($_GET['status']) ? '&status=' . urlencode($_GET['status']) : '';
+    $searchParam = isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : '';
+    header('Location: akun.php?tab=orders' . $statusParam . $searchParam);
+    exit;
 }
 
 // ── Handle checkout POST early (before any HTML output) ─────

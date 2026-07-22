@@ -15,7 +15,7 @@ session_start();
 // If already logged in, redirect based on role
 if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
     if ($_SESSION['role'] === 'admin') {
-        header('Location: admin/admin.php');
+        header('Location: admin/admin.php?page=tambah-produk');
     } else {
         header('Location: index.php');
     }
@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['role']    = $user['role'];
 
                     if ($user['role'] === 'admin') {
-                        header('Location: admin/admin.php');
+                        header('Location: admin/admin.php?page=tambah-produk');
                     } else {
                         header('Location: index.php');
                     }

@@ -179,11 +179,11 @@ $totalProducts = count($products);
                     <!-- Preview Zone -->
                     <div class="img-upload__preview" id="img-preview-wrap">
                         <img id="img-preview"
-                             src="<?= htmlspecialchars($editProduct['image_url'] ?? '') ?>"
+                             src="<?= ($editProduct && !empty($editProduct['image_url'])) ? htmlspecialchars(getProductImage($editProduct['name'], $editProduct['image_url'])) : '' ?>"
                              alt="Preview Produk"
-                             style="<?= ($editProduct['image_url'] ?? '') ? 'display:block;' : 'display:none;' ?>">
+                             style="<?= ($editProduct && !empty($editProduct['image_url'])) ? 'display:block;' : 'display:none;' ?>">
                         <button type="button" class="img-preview__remove" id="img-remove-btn"
-                                style="<?= ($editProduct['image_url'] ?? '') ? '' : 'display:none;' ?>"
+                                style="<?= ($editProduct && !empty($editProduct['image_url'])) ? '' : 'display:none;' ?>"
                                 title="Hapus foto">✕</button>
                     </div>
                     <!-- Drop Zone -->
@@ -624,7 +624,14 @@ $totalProducts = count($products);
     urlInput.addEventListener('input', function() {
         var val = this.value.trim();
         if (val) {
-            previewImg.src = val;
+            var resolvedVal = val;
+            if (!val.startsWith('http://') && !val.startsWith('https://') && !val.startsWith('/')) {
+                if (!val.startsWith('assets/')) {
+                    resolvedVal = 'assets/' + val;
+                }
+                resolvedVal = '<?= BASE_URL ?>' + resolvedVal;
+            }
+            previewImg.src = resolvedVal;
             previewImg.onload = function() {
                 previewWrap.classList.add('has-image');
                 previewImg.style.display = 'block';

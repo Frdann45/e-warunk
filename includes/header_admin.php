@@ -59,16 +59,6 @@ $adminHeaderInitials = isset($_SESSION['name'])
         <!-- ── Right Actions ─────────────────────────────────── -->
         <div class="admin-header__actions">
 
-            <!-- Kunjungi Toko Button -->
-            <a href="<?= BASE_URL ?>index.php" target="_blank" class="admin-header__visit-btn" id="btn-visit-store" title="Buka halaman toko">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
-                    <polyline points="15 3 21 3 21 9"/>
-                    <line x1="10" y1="14" x2="21" y2="3"/>
-                </svg>
-                <span>Kunjungi Toko</span>
-            </a>
-
             <!-- Profile Avatar -->
             <div class="admin-header__profile" id="admin-profile-wrapper">
                 <div class="admin-header__avatar" title="<?= $adminHeaderName ?>">
